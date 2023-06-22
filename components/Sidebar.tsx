@@ -38,7 +38,7 @@ const Sidebar = () => {
 
   return (
     <aside className="flex h-full">
-      <div className="hidden md:flex flex-col gap-2 w-[300px] h-full p-2">
+      <div className="hidden md:flex flex-col gap-2 w-[300px] h-full">
         <Box>
           <div className="flex flex-col gap-4 px-5 py-4">
             {routes.map(routeItem => {

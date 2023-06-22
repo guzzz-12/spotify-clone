@@ -1,4 +1,5 @@
 import { Figtree } from "next/font/google";
+import { twMerge } from "tailwind-merge";
 import Sidebar from "@/components/Sidebar";
 import "./globals.css";
 
@@ -16,9 +17,9 @@ interface Props {
 const RootLayout = ({children}: Props) => {
   return (
     <html lang="en">
-      <body className={figtree.className}>
+      <body className={twMerge("flex gap-2 w-full h-screen m-0 p-2 text-white bg-black", figtree.className)}>
         <Sidebar/>
-        <main>
+        <main className="w-full h-full">
           {children}
         </main>
       </body>
