@@ -1,12 +1,12 @@
 "use client"
 
+import { useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { useSupabaseClient, useSessionContext } from "@supabase/auth-helpers-react";
 import { Auth } from "@supabase/auth-ui-react";
 import { ThemeSupa } from "@supabase/auth-ui-shared";
 import GenericModal from "./GenericModal"
 import useAuthModal from "@/hooks/useAuthModal";
-import { useEffect } from "react";
 
 const AuthModal = () => {
   const router = useRouter();
