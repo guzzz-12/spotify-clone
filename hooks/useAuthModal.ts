@@ -5,6 +5,7 @@ interface AuthModalState {
   onOpenChange: (open: boolean) => void;
 };
 
+/** State del modal de autenticación */
 const useAuthModal = create<AuthModalState>((set) => {
   return {
     isOpen: false,

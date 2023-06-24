@@ -46,7 +46,7 @@ const GenericModal = (props: Props) => {
           <Dialog.Content asChild>
             <motion.div
               key="modal-content"
-              className="fixed top-[50%] left-[50%] w-full h-full p-6 -translate-x-[50%] -translate-y-[50%] drop-shadow-md border rounded-md bg-neutral-800 focus:outline-none border-neutral-700 md:w-[90vw] md:max-w-[450px] md:h-auto md:max-h-[85vh]"
+              className="fixed top-[50%] left-[50%] w-full h-full p-6 -translate-x-[50%] -translate-y-[50%] drop-shadow-md border rounded-md bg-neutral-800 overflow-y-auto focus:outline-none border-neutral-700 md:w-[90vw] md:max-w-[450px] md:h-auto md:max-h-[85vh]"
               initial={{x: "-50%", y: "-60%", opacity: 0}}
               animate={{x: "-50%", y: "-50%", opacity: 1}}
               exit={{x: "-50%", y: "-60%", opacity: 0}}
