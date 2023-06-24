@@ -4,6 +4,7 @@ import Sidebar from "@/components/Sidebar";
 import SupabaseProvider from "@/supabase/SupabaseProvider";
 import UserProvider from "@/context/UserProvider";
 import AuthModal from "@/components/AuthModal";
+import UploadSongModal from "@/components/UploadSongModal";
 import ToastWrapper from "@/components/ToastWrapper";
 import "./globals.css";
 
@@ -25,6 +26,7 @@ const RootLayout = ({children}: Props) => {
         <SupabaseProvider>
           <UserProvider>
             <AuthModal />
+            <UploadSongModal />
             <Sidebar/>
             <main className="w-full h-full">
               {children}

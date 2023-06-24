@@ -1,11 +1,24 @@
 "use client"
 
+import { useContext } from "react";
 import { TbPlaylist } from "react-icons/tb";
-import { AiOutlinePlus } from "react-icons/ai";
+import { AiOutlinePlus } from "react-icons/ai"
+import { UserContext } from "@/context/UserProvider";
+import useAuthModal from "@/hooks/useAuthModal";
+import useUploadModal from "@/hooks/useUploadModal";
 
 const SongLibrary = () => {
+  const {user} = useContext(UserContext);
+
+  const authModalState = useAuthModal();
+  const uploadModalState = useUploadModal();
+
   const onClickHandler = () => {
-    // Lógica para subir canciones
+    if (!user) {
+      return authModalState.onOpenChange(true)
+    };
+
+    uploadModalState.onOpenChange(true);
   };
 
   return (
@@ -21,7 +34,7 @@ const SongLibrary = () => {
         <AiOutlinePlus
           className="text-neutral-400 cursor-pointer hover:text-white transition-colors"
           size={24}
-          onClick={() => null}
+          onClick={onClickHandler}
         />
       </div>
 
