@@ -1,7 +1,7 @@
 import { Figtree } from "next/font/google";
 import { twMerge } from "tailwind-merge";
 import Sidebar from "@/components/Sidebar";
-import SupabaseProvider from "@/supabase/SupabaseProvider";
+import SupabaseProvider from "@/context/SupabaseProvider";
 import UserProvider from "@/context/UserProvider";
 import AuthModal from "@/components/AuthModal";
 import UploadSongModal from "@/components/UploadSongModal";

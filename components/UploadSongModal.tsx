@@ -6,6 +6,7 @@ import { FormProvider, useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { AnimatePresence, motion } from "framer-motion";
+import { twMerge } from "tailwind-merge";
 import { toast } from "react-hot-toast";
 import uniqueId from "uniqid";
 import { useSupabaseClient } from "@supabase/auth-helpers-react";
@@ -15,11 +16,10 @@ import { MdDriveFileRenameOutline } from "react-icons/md";
 import useUploadModal from "@/hooks/useUploadModal";
 import GenericModal from "./GenericModal";
 import FormInput from "./FormInput";
-import { twMerge } from "tailwind-merge";
 import Button from "./Button";
 import { UserContext } from "@/context/UserProvider";
 import { Database } from "@/types/supabase";
-import { fileToBase64, imageProcessor } from "@/utils/imageCompression";
+import { imageProcessor } from "@/utils/imageCompression";
 
 const AUTHOR_NAME_REGEX = /^[A-Za-zÀ-ž0-9\s]{3,32}$/;
 const SONG_TITLE_REGEX = /^[A-Za-zÀ-ž0-9_\-\s]{3,32}$/;
@@ -71,7 +71,7 @@ const UploadSongModal = () => {
       setSelectedAudioFile(null);
       setSelectedImageFile(null);
       setSelectedImagePreview(null);
-      
+
       setAudioRequiredError(false);
       setImageRequiredError(false);
 
@@ -102,13 +102,13 @@ const UploadSongModal = () => {
     if (imageFile) {
       try {
         const compressedImage = await imageProcessor(imageFile);
-        const imagePreview = await fileToBase64(imageFile);
+        const imagePreview = URL.createObjectURL(imageFile);
         
         setSelectedImageFile(compressedImage);
         setSelectedImagePreview(imagePreview);
 
       } catch (error) {
-        toast.error("error processing file. refresh the page and try again")
+        toast.error("Error processing file. refresh the page and try again")
       }
     };
   };

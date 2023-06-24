@@ -7,10 +7,11 @@ import { Auth } from "@supabase/auth-ui-react";
 import { ThemeSupa } from "@supabase/auth-ui-shared";
 import GenericModal from "./GenericModal"
 import useAuthModal from "@/hooks/useAuthModal";
+import { Database } from "@/types/supabase";
 
 const AuthModal = () => {
   const router = useRouter();
-  const supabase = useSupabaseClient();
+  const supabase = useSupabaseClient<Database>();
   const {session} = useSessionContext();
 
   const {isOpen, onOpenChange} = useAuthModal();
