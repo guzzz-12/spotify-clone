@@ -3,6 +3,8 @@ import { twMerge } from "tailwind-merge";
 import Sidebar from "@/components/Sidebar";
 import SupabaseProvider from "@/supabase/SupabaseProvider";
 import UserProvider from "@/context/UserProvider";
+import AuthModal from "@/components/AuthModal";
+import ToastWrapper from "@/components/ToastWrapper";
 import "./globals.css";
 
 const figtree = Figtree({subsets: ["latin"]});
@@ -22,10 +24,12 @@ const RootLayout = ({children}: Props) => {
       <body className={twMerge("flex gap-2 w-full h-screen m-0 p-2 text-white bg-black", figtree.className)}>
         <SupabaseProvider>
           <UserProvider>
+            <AuthModal />
             <Sidebar/>
             <main className="w-full h-full">
               {children}
             </main>
+            <ToastWrapper />
           </UserProvider>
         </SupabaseProvider>
       </body>
