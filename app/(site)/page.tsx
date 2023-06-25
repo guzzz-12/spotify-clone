@@ -1,7 +1,11 @@
 import Header from "@/components/Header";
 import ListItem from "@/components/ListItem";
+import getSongs from "@/serverActions/getSongs";
+import SongsList from "./components/SongsList";
 
-const Home = () => {
+const Home = async () => {
+  const songs = await getSongs();
+
   return (
     <section className="w-full h-full rounded-lg bg-neutral-900 overflow-hidden overflow-y-auto">
       <Header>
@@ -25,9 +29,7 @@ const Home = () => {
             Newest Songs
           </h2>
         </div>
-        <div>
-          <p>List of songs</p>
-        </div>
+        <SongsList songs={songs} />
       </div>
     </section>
   )
