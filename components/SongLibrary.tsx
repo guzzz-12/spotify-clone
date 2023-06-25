@@ -3,11 +3,17 @@
 import { useContext } from "react";
 import { TbPlaylist } from "react-icons/tb";
 import { AiOutlinePlus } from "react-icons/ai"
+import SongLibraryItem from "./SongLibraryItem";
 import { UserContext } from "@/context/UserProvider";
 import useAuthModal from "@/hooks/useAuthModal";
 import useUploadModal from "@/hooks/useUploadModal";
+import { Song } from "@/types";
 
-const SongLibrary = () => {
+interface Props {
+  userSongs: Song[];
+};
+
+const SongLibrary = ({userSongs}: Props) => {
   const {user} = useContext(UserContext);
 
   const authModalState = useAuthModal();
@@ -39,7 +45,11 @@ const SongLibrary = () => {
       </div>
 
       <div className="flex flex-col gap-2 mt-5">
-        List of songs
+        {userSongs.map(song => {
+          return (
+            <SongLibraryItem key={song.id} song={song} onClick={() => {}} />
+          )
+        })}
       </div>
     </div>
   )

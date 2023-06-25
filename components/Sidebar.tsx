@@ -8,6 +8,7 @@ import { BiSearch } from "react-icons/bi";
 import Box from "./Box";
 import SidebarItem from "./SidebarItem";
 import SongLibrary from "./SongLibrary";
+import { Song } from "@/types";
 
 export type RouteItem = {
   label: string;
@@ -16,7 +17,11 @@ export type RouteItem = {
   href: string;
 };
 
-const Sidebar = () => {
+interface Props {
+  userSongs: Song[];
+};
+
+const Sidebar = ({userSongs}: Props) => {
   const path = usePathname();
 
   const routes: RouteItem[] = useMemo(() => {
@@ -50,7 +55,7 @@ const Sidebar = () => {
         </Box>
 
         <Box className="h-full overflow-y-auto">
-          <SongLibrary />
+          <SongLibrary userSongs={userSongs} />
         </Box>
       </div>
     </aside>
