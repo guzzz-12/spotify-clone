@@ -7,18 +7,17 @@ import PlayBtn from "./PlayBtn";
 
 interface Props {
   song: Song;
-  onClick: (id: number) => void;
 };
 
 const SongItem = (props: Props) => {
-  const {song, onClick} = props;
+  const {song} = props;
 
   const imageUrl = useLoadImage(song);
 
   return (
     <div
       className="relative flex flex-col justify-center items-center gap-4 p-3 rounded-md bg-neutral-400/5 group overflow-hidden cursor-pointer transition-colors hover:bg-neutral-400/10"
-      onClick={onClick.bind(null, song.id)}
+      onClick={() => {}}
     >
       <div className="absolute top-0 left-0 w-full h-full bg-black/0 transition-colors group-hover:bg-black/60 z-10" />
       <div className="relative w-full aspect-square rounded-md overflow-hidden">

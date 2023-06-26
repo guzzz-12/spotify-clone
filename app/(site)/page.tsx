@@ -1,12 +1,11 @@
+import { Suspense } from "react";
 import SongsList from "@/components/SongList/SongsList";
 import Header from "@/components/Header";
 import ListItem from "@/components/ListItem";
-import getSongs from "@/serverActions/getSongs";
 import PageTitle from "@/components/PageTitle";
+import Loading from "./loading";
 
 const Home = async () => {
-  const songs = await getSongs();
-
   return (
     <section className="w-full h-full rounded-lg bg-neutral-900 overflow-hidden overflow-y-auto">
       <Header>
@@ -26,7 +25,9 @@ const Home = async () => {
 
       <div className="mt-2 mb-7 px-6">
         <PageTitle title="Newest Songs" />
-        <SongsList songs={songs} />
+        <Suspense fallback={<Loading />}>
+          <SongsList />
+        </Suspense>
       </div>
     </section>
   )

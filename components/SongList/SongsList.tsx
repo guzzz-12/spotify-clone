@@ -1,13 +1,11 @@
-"use client"
-
-import { Song } from "@/types";
 import SongItem from "./SongItem";
+import getSongs from "@/serverActions/getSongs";
 
-interface Props {
-  songs: Song[];
-};
+export const revalidate = 0;
 
-const SongsList = ({songs}: Props) => {
+const SongsList = async () => {
+  const songs = await getSongs();
+
   if (songs.length === 0) {
     return (
       <h2 className="mt-4 text-neutral-400">
@@ -23,7 +21,6 @@ const SongsList = ({songs}: Props) => {
           <SongItem
             key={song.id}
             song={song}
-            onClick={() => {}}
           />
         )
       })}
