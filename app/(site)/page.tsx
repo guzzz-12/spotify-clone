@@ -1,7 +1,8 @@
+import SongsList from "@/components/SongList/SongsList";
 import Header from "@/components/Header";
 import ListItem from "@/components/ListItem";
 import getSongs from "@/serverActions/getSongs";
-import SongsList from "./components/SongsList";
+import PageTitle from "@/components/PageTitle";
 
 const Home = async () => {
   const songs = await getSongs();
@@ -24,11 +25,7 @@ const Home = async () => {
       </Header>
 
       <div className="mt-2 mb-7 px-6">
-        <div className="flex justify-between items-center">
-          <h2 className="text-2xl font-semibold">
-            Newest Songs
-          </h2>
-        </div>
+        <PageTitle title="Newest Songs" />
         <SongsList songs={songs} />
       </div>
     </section>
