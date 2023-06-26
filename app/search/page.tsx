@@ -1,20 +1,24 @@
 import Header from "@/components/Header";
 import PageTitle from "@/components/PageTitle";
 import SearchInput from "./components/SearchInput";
-import getSongsByTitle from "@/serverActions/getSongsByTitle";
-import SongsList from "@/components/SongList/SongsList";
+import getSongsByTitle from "@/serverActions/searchSongs";
+import SearchResults from "@/components/SearchResults";
+
+export type FilterBy = "title" | "author";
 
 interface Props {
-  /** searchParams es el query string y lo agrega Next.js
-   * automáticamente a los archivos page.
+  /** searchParams es el objeto con el query string parseado
+   * y lo agrega Next.js automáticamente a los archivos page.
    * */
   searchParams: {
-    songTitle: string;
+    term: string;
+    filterBy: FilterBy;
   }
 };
 
 const SearchPage = async ({searchParams}: Props) => {
-  const songs = await getSongsByTitle(searchParams.songTitle);
+  const {term, filterBy} = searchParams;
+  const songs = await getSongsByTitle(term, filterBy);
 
   return (
     <section className="w-full h-full rounded-lg bg-neutral-900 overflow-hidden overflow-y-auto">
@@ -23,7 +27,7 @@ const SearchPage = async ({searchParams}: Props) => {
         <SearchInput />
       </Header>
       <div className="mt-2 mb-7 px-6">
-        <SongsList songs={songs} />
+        <SearchResults songs={songs} />
       </div>
     </section>
   )

@@ -2,9 +2,10 @@ import { cookies } from "next/headers";
 import { createServerComponentClient } from "@supabase/auth-helpers-nextjs";
 import { Song } from "@/types";
 import { Database } from "@/types/supabase";
+import { FilterBy } from "@/app/search/page";
 
 /** Server action para consultar canciones por título */
-const getSongsByTitle = async (songTitle: string): Promise<Song[]> => {
+const searchSongs = async (term: string, filterBy: FilterBy): Promise<Song[]> => {
   const supabase = createServerComponentClient<Database>({
     cookies
   });
@@ -13,7 +14,11 @@ const getSongsByTitle = async (songTitle: string): Promise<Song[]> => {
     const {data, error} = await supabase
     .from("songs")
     .select()
-    .textSearch("title", songTitle, {config: "english", type: "phrase"})
+    .textSearch(
+      filterBy === "title" ? "title" : "author",
+      term,
+      {config: "english", type: "phrase"}
+    )
     .order("created_at", {ascending: false});
 
     if (error) {
@@ -28,4 +33,4 @@ const getSongsByTitle = async (songTitle: string): Promise<Song[]> => {
   };
 };
 
-export default getSongsByTitle;
+export default searchSongs;
