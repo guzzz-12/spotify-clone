@@ -39,7 +39,7 @@ const SearchInput = () => {
           size={24}
         />
         <input
-          className="w-full pl-8 pr-2 py-2 text-black bg-neutral-200 rounded-md"
+          className="w-full pl-9 pr-2 py-2 text-black bg-neutral-200 rounded-md"
           id="searchSongs"
           type="search"
           name="searchSongs"
@@ -49,7 +49,8 @@ const SearchInput = () => {
         />
       </div>
 
-      <form>
+      <form className="flex justify-start items-center gap-3">
+        <p>Filter by:</p>
         <RadioGroup.Root
           className="flex flex-row gap-4"
           defaultValue="title"
@@ -59,10 +60,10 @@ const SearchInput = () => {
           <div className="flex items-center">
             <RadioGroup.Item
               id="title"
-              className="bg-white w-6 h-6 rounded-full shadow-[0_2px_10px] shadow-black hover:bg-gray-300 focus:shadow-[0_0_0_2px] focus:shadow-black outline-none cursor-pointer"
+              className="bg-white w-5 h-5 rounded-full shadow-[0_2px_10px] shadow-black hover:bg-gray-300 focus:shadow-[0_0_0_2px] focus:shadow-black outline-none cursor-pointer"
               value="title"
             >
-              <RadioGroup.Indicator className="flex items-center justify-center w-full h-full relative after:content-[''] after:block after:w-3 after:h-3 after:rounded-[50%] after:bg-blue-600" />
+              <RadioGroup.Indicator className="flex items-center justify-center w-full h-full relative after:content-[''] after:block after:w-[10px] after:h-[10px] after:rounded-[50%] after:bg-emerald-800" />
             </RadioGroup.Item>
             <label
               className="pl-2 text-base text-white leading-none cursor-pointer"
@@ -75,10 +76,10 @@ const SearchInput = () => {
           <div className="flex items-center">
             <RadioGroup.Item
               id="author"
-              className="bg-white w-6 h-6 rounded-full shadow-[0_2px_10px] shadow-black hover:bg-gray-300 focus:shadow-[0_0_0_2px] focus:shadow-black outline-none cursor-pointer"
+              className="bg-white w-5 h-5 rounded-full shadow-[0_2px_10px] shadow-black hover:bg-gray-300 focus:shadow-[0_0_0_2px] focus:shadow-black outline-none cursor-pointer"
               value="author"
             >
-              <RadioGroup.Indicator className="flex items-center justify-center w-full h-full relative after:content-[''] after:block after:w-[11px] after:h-[11px] after:rounded-[50%] after:bg-blue-600" />
+              <RadioGroup.Indicator className="flex items-center justify-center w-full h-full relative after:content-[''] after:block after:w-[10px] after:h-[10px] after:rounded-[50%] after:bg-emerald-800" />
             </RadioGroup.Item>
             <label
               className="pl-2 text-base text-white leading-none cursor-pointer"
