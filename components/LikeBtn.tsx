@@ -2,13 +2,13 @@
 
 import { useContext, useEffect, useState, MouseEvent } from "react";
 import { useRouter } from "next/navigation";
-import { User, useSessionContext } from "@supabase/auth-helpers-react";
+import { User, useSupabaseClient } from "@supabase/auth-helpers-react";
 import { AnimatePresence, motion } from "framer-motion";
 import { AiOutlineHeart, AiFillHeart } from "react-icons/ai";
 
 import useAuthModal from "@/hooks/useAuthModal";
 import { UserContext } from "@/context/UserProvider";
-import { Song } from "@/types";
+import { Database } from "@/types/supabase";
 
 interface Props {
   songId: number;
@@ -17,7 +17,7 @@ interface Props {
 const LikeBtn = ({songId}: Props) => {
   const {refresh} = useRouter();
   const {user} = useContext(UserContext);
-  const {supabaseClient} = useSessionContext();
+  const supabase = useSupabaseClient<Database>();
   
   const authModal = useAuthModal();
 
@@ -29,11 +29,11 @@ const LikeBtn = ({songId}: Props) => {
       try {
         setIsLoading(true);
 
-        const {data, error} = await supabaseClient
+        const {data, error} = await supabase
         .from("liked_songs")
         .select("*")
         .match({user_id: user.id, song_id: songId})
-        .single<Song>();
+        .single();
 
         if (error) {
           throw new Error(error.message)
@@ -68,7 +68,7 @@ const LikeBtn = ({songId}: Props) => {
       if (!isLiked) {
         setIsLiked(true);
 
-        const {error} = await supabaseClient
+        const {error} = await supabase
         .from("liked_songs")
         .insert({user_id: user.id, song_id: songId});
 
@@ -79,7 +79,7 @@ const LikeBtn = ({songId}: Props) => {
       } else {
         setIsLiked(false);
 
-        const {error} = await supabaseClient
+        const {error} = await supabase
         .from("liked_songs")
         .delete()
         .match({user_id: user.id, song_id: songId})

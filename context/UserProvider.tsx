@@ -2,8 +2,9 @@
 
 import { ReactNode, createContext, useEffect, useState } from "react";
 import { User } from "@supabase/auth-helpers-nextjs";
-import { useSessionContext, useUser } from "@supabase/auth-helpers-react";
+import { useSessionContext, useSupabaseClient, useUser } from "@supabase/auth-helpers-react";
 import { Subscription, UserDetails } from "@/types";
+import { Database } from "@/types/supabase";
 
 type UserContextType = {
   accessToken: string | null;
@@ -26,7 +27,8 @@ export const UserContext = createContext<UserContextType>({
 });
 
 const UserProvider = ({children}: {children: ReactNode}) => {
-  const {session, supabaseClient} = useSessionContext();
+  const {session} = useSessionContext();
+  const supabase = useSupabaseClient<Database>()
   const user = useUser();
 
   const accessToken = session?.access_token ?? null;
@@ -42,13 +44,33 @@ const UserProvider = ({children}: {children: ReactNode}) => {
     try {
       setIsLoadingUser(true);
 
-      const {data, error} = await supabaseClient
+      const {data, error} = await supabase
       .from("users")
       .select("*")
-      .single<UserDetails>();
+      .single();
 
       if (error) {
-        throw error;
+        throw new Error(error.message);
+      };
+
+      const {full_name, first_name} = data;
+
+      // Actualizar el nomre y el apellido si aún no se han actualizado
+      if (full_name && !first_name) {
+        const first_name = full_name.split(" ")[0];
+        const last_name = full_name.split(" ")[1];
+
+        const {data: updatedUserDetails, error: updateUserError} = await supabase
+        .from("users")
+        .update({first_name, last_name})
+        .eq("id", data.id)
+        .single();
+
+        if (updateUserError) {
+          throw new Error(updateUserError.message)
+        }
+
+        return setUserDetails(updatedUserDetails);
       };
 
       setUserDetails(data);
@@ -66,11 +88,11 @@ const UserProvider = ({children}: {children: ReactNode}) => {
     try {
       setIsLoadingSubscription(true);
 
-      const {data, error} = await supabaseClient
+      const {data, error} = await supabase
       .from("subscriptions")
       .select("*, prices(*, products(*))")
       .in("status", ["trialing", "active"])
-      .single<Subscription>();
+      .single();
 
       if (error) {
         throw error;
