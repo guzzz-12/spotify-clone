@@ -54,7 +54,7 @@ const Sidebar = ({userSongs}: Props) => {
           </div>
         </Box>
 
-        <Box className="h-full overflow-y-auto">
+        <Box className="h-full custom-scrollbar overflow-y-auto">
           <SongLibrary userSongs={userSongs} />
         </Box>
       </div>
