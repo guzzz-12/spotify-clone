@@ -64,8 +64,10 @@ const LikeBtn = ({songId}: Props) => {
 
     try {
       setIsLoading(true);
-
+      
       if (!isLiked) {
+        setIsLiked(true);
+
         const {error} = await supabaseClient
         .from("liked_songs")
         .insert({user_id: user.id, song_id: songId});
@@ -74,9 +76,9 @@ const LikeBtn = ({songId}: Props) => {
           throw new Error(error.message)
         };
 
-        setIsLiked(true);
-
       } else {
+        setIsLiked(false);
+
         const {error} = await supabaseClient
         .from("liked_songs")
         .delete()
@@ -86,8 +88,6 @@ const LikeBtn = ({songId}: Props) => {
         if (error) {
           throw new Error(error.message)
         };
-
-        setIsLiked(false);
       };
       
       refresh();

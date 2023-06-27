@@ -17,11 +17,15 @@ const getCurrentUserSongs = async (): Promise<Song[]> => {
       throw new Error(sessionError.message)
     };
 
+    if (!sessionData.session) {
+      throw new Error("You must be logged in to perform this action")
+    };
+
     // Consultar las canciones del usuario
     const {data, error} = await supabase
     .from("songs")
     .select("*")
-    .eq("user_id", sessionData.session?.user.id)
+    .eq("user_id", sessionData.session.user.id)
     .order("created_at", {ascending: false});
 
     if (error) {

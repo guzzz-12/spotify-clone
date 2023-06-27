@@ -19,7 +19,7 @@ interface Props {
 
 const SearchPage = async ({searchParams}: Props) => {
   return (
-    <section className="w-full h-full rounded-lg bg-neutral-900 overflow-hidden overflow-y-auto">
+    <section className="page-wrapper">
       <Header>
         <PageTitle title="Search"/>
         <SearchInput />

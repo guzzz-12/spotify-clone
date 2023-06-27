@@ -8,6 +8,10 @@
 }
 
 @layer components {
+  .page-wrapper {
+    @apply w-full h-full rounded-lg bg-neutral-900 overflow-hidden overflow-y-auto
+  }
+
   .custom-scrollbar {
     @apply scrollbar-thin scrollbar-thumb-neutral-700
   }
