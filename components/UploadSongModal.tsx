@@ -12,6 +12,7 @@ import uniqueId from "uniqid";
 import { useSupabaseClient } from "@supabase/auth-helpers-react";
 import { AiOutlineUser } from "react-icons/ai";
 import { MdDriveFileRenameOutline } from "react-icons/md";
+import { BiLoaderAlt } from "react-icons/bi";
 
 import useUploadModal from "@/hooks/useUploadModal";
 import GenericModal from "./GenericModal";
@@ -324,11 +325,26 @@ const UploadSongModal = () => {
           </div>
 
           <Button
+            className="flex justify-between items-center"
             type="submit"
             disabled={isUploading}
             onClickHandler={() => null}
           >
-            Upload file
+            <AnimatePresence>
+              {isUploading && (
+                <motion.div
+                  className="block mr-2 animate-spin"
+                  initial={{size: 0, opacity: 0}}
+                  animate={{size: "auto", opacity: 1}}
+                  exit={{size: 0, opacity: 0}}
+                >
+                  <BiLoaderAlt size={24} />
+                </motion.div>
+              )}
+            </AnimatePresence>
+            <span>
+              {isUploading ? "Uploading song" : "Upload song"}
+            </span>
           </Button>
         </form>
       </FormProvider>
