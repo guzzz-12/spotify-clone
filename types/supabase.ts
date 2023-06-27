@@ -12,15 +12,15 @@ export interface Database {
       customers: {
         Row: {
           id: string
-          stripe_customer_id: string | null
+          stripe_customer_id: string
         }
         Insert: {
           id: string
-          stripe_customer_id?: string | null
+          stripe_customer_id: string
         }
         Update: {
           id?: string
-          stripe_customer_id?: string | null
+          stripe_customer_id?: string
         }
         Relationships: [
           {
@@ -65,42 +65,42 @@ export interface Database {
       prices: {
         Row: {
           active: boolean | null
-          currency: string | null
+          currency: string
           description: string | null
           id: string
           interval: Database["public"]["Enums"]["pricing_plan_interval"] | null
           interval_count: number | null
           metadata: Json | null
-          product_id: string | null
+          product_id: string
           trial_period_days: number | null
-          type: Database["public"]["Enums"]["pricing_type"] | null
-          unit_amount: number | null
+          type: Database["public"]["Enums"]["pricing_type"]
+          unit_amount: number
         }
         Insert: {
           active?: boolean | null
-          currency?: string | null
+          currency: string
           description?: string | null
           id: string
           interval?: Database["public"]["Enums"]["pricing_plan_interval"] | null
           interval_count?: number | null
           metadata?: Json | null
-          product_id?: string | null
+          product_id: string
           trial_period_days?: number | null
-          type?: Database["public"]["Enums"]["pricing_type"] | null
-          unit_amount?: number | null
+          type: Database["public"]["Enums"]["pricing_type"]
+          unit_amount: number
         }
         Update: {
           active?: boolean | null
-          currency?: string | null
+          currency?: string
           description?: string | null
           id?: string
           interval?: Database["public"]["Enums"]["pricing_plan_interval"] | null
           interval_count?: number | null
           metadata?: Json | null
-          product_id?: string | null
+          product_id?: string
           trial_period_days?: number | null
-          type?: Database["public"]["Enums"]["pricing_type"] | null
-          unit_amount?: number | null
+          type?: Database["public"]["Enums"]["pricing_type"]
+          unit_amount?: number
         }
         Relationships: [
           {
@@ -113,28 +113,28 @@ export interface Database {
       }
       products: {
         Row: {
-          active: boolean | null
-          description: string | null
+          active: boolean
+          description: string
           id: string
-          image: string | null
-          metadata: Json | null
-          name: string | null
+          image: string
+          metadata: Json
+          name: string
         }
         Insert: {
-          active?: boolean | null
-          description?: string | null
+          active: boolean
+          description: string
           id: string
-          image?: string | null
-          metadata?: Json | null
-          name?: string | null
+          image: string
+          metadata: Json
+          name: string
         }
         Update: {
-          active?: boolean | null
-          description?: string | null
+          active?: boolean
+          description?: string
           id?: string
-          image?: string | null
-          metadata?: Json | null
-          name?: string | null
+          image?: string
+          metadata?: Json
+          name?: string
         }
         Relationships: []
       }
@@ -186,7 +186,7 @@ export interface Database {
           ended_at: string | null
           id: string
           metadata: Json | null
-          price_id: string | null
+          price_id: string
           quantity: number | null
           status: Database["public"]["Enums"]["subscription_status"] | null
           trial_end: string | null
@@ -203,7 +203,7 @@ export interface Database {
           ended_at?: string | null
           id: string
           metadata?: Json | null
-          price_id?: string | null
+          price_id: string
           quantity?: number | null
           status?: Database["public"]["Enums"]["subscription_status"] | null
           trial_end?: string | null
@@ -220,7 +220,7 @@ export interface Database {
           ended_at?: string | null
           id?: string
           metadata?: Json | null
-          price_id?: string | null
+          price_id?: string
           quantity?: number | null
           status?: Database["public"]["Enums"]["subscription_status"] | null
           trial_end?: string | null
@@ -246,22 +246,28 @@ export interface Database {
         Row: {
           avatar_url: string | null
           billing_address: Json | null
+          first_name: string | null
           full_name: string | null
           id: string
+          last_name: string | null
           payment_method: Json | null
         }
         Insert: {
-          avatar_url?: string | null
+          avatar_url: string
           billing_address?: Json | null
+          first_name: string
           full_name?: string | null
           id: string
+          last_name: string
           payment_method?: Json | null
         }
         Update: {
-          avatar_url?: string | null
+          avatar_url?: string
           billing_address?: Json | null
+          first_name?: string
           full_name?: string | null
           id?: string
+          last_name?: string
           payment_method?: Json | null
         }
         Relationships: [

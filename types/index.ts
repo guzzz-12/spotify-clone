@@ -1,55 +1,56 @@
 import Stripe from "stripe";
+import { Json } from "./supabase";
 
 export interface UserDetails {
   id: string;
-  first_name: string;
-  last_name: string;
-  full_name?: string;
-  avatar_url?: string;
-  billing_address?: string;
-  payment_method?: Stripe.PaymentMethod[Stripe.PaymentMethod.Type]
+  first_name: string | null;
+  last_name: string | null;
+  full_name: string | null;
+  avatar_url: string | null;
+  billing_address: Json | null;
+  payment_method: Stripe.PaymentMethod[Stripe.PaymentMethod.Type] | null
 };
 
 export interface Product {
-  id: string;
-  active?: boolean;
-  name?: string;
-  description?: string;
-  image?: string;
-  metadata?: Stripe.Metadata;
+  active: boolean
+  description: string
+  id: string
+  image: string
+  metadata: Json
+  name: string
 };
 
 export interface Price {
   id: string;
-  product_id?: string;
-  active?: boolean;
-  description?: string;
-  init_amount?: number;
-  currency?: string;
-  type?: Stripe.Price.Type;
-  interval?: Stripe.Price.Recurring.Interval;
-  interval_count?: number;
-  trial_period_days?: number;
-  products?: Product;
+  product_id: string;
+  active: boolean | null;
+  description: string | null;
+  unit_amount: number;
+  currency: string;
+  type: Stripe.Price.Type;
+  interval: Stripe.Price.Recurring.Interval | null;
+  interval_count: number | null;
+  trial_period_days: number | null;
+  products: Product | null;
 };
 
 export interface Subscription {
   id: string;
   user_id: string;
-  status?: Stripe.Subscription.Status;
-  metadata?: Stripe.Metadata;
-  price_id?: string;
-  quantity?: number;
-  cancel_at_period_end?: boolean;
+  status: Stripe.Subscription.Status | null;
+  metadata: Json | null;
+  price_id: string | null;
+  quantity: number | null;
+  cancel_at_period_end: boolean | null;
   created: string;
   current_period_start: string;
   current_period_end: string;
-  ended_at?: string;
-  cancel_at?: string;
-  canceled_at?: string;
-  trial_start?: string;
-  trial_end?: string;
-  prices?: Price;
+  ended_at: string | null;
+  cancel_at: string | null;
+  canceled_at: string | null;
+  trial_start: string | null;
+  trial_end: string | null;
+  prices: Price | null;
 };
 
 export interface Song {
