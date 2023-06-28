@@ -1,9 +1,10 @@
 "use client"
 
 import Image from "next/image";
-import useLoadImage from "@/hooks/useLoadImage";
-import { Song } from "@/types";
 import PlayBtn from "./PlayBtn";
+import useLoadImage from "@/hooks/useLoadImage";
+import usePlayer from "@/hooks/usePlayer";
+import { Song } from "@/types";
 
 interface Props {
   song: Song;
@@ -13,6 +14,12 @@ const SongItem = (props: Props) => {
   const {song} = props;
 
   const imageUrl = useLoadImage(song);
+  const {setActiveId, setPlayList} = usePlayer();
+
+  const onClickPlayHandler = (songId: number) => {
+    setPlayList([]);
+    setActiveId(songId);
+  };
 
   return (
     <div
@@ -27,7 +34,10 @@ const SongItem = (props: Props) => {
           src={imageUrl || "/images/song-default-image.webp"}
           alt={`${song.title} image`}
         />
-        <div className="absolute top-[50%] left-[50%] -translate-x-[50%] -translate-y-[50%] z-20">
+        <div
+          className="absolute top-[50%] left-[50%] -translate-x-[50%] -translate-y-[50%] z-20"
+          onClick={onClickPlayHandler.bind(null, song.id)}
+        >
           <PlayBtn />
         </div>
       </div>
