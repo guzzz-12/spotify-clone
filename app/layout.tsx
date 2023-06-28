@@ -6,8 +6,10 @@ import SupabaseProvider from "@/context/SupabaseProvider";
 import UserProvider from "@/context/UserProvider";
 import AuthModal from "@/components/AuthModal";
 import UploadSongModal from "@/components/UploadSongModal";
+import Player from "@/components/Player";
 import ToastWrapper from "@/components/ToastWrapper";
 import getCurrentUserSongs from "@/serverActions/getCurrentUserSongs";
+import "react-tooltip/dist/react-tooltip.css";
 import "./globals.css";
 
 const figtree = Figtree({subsets: ["latin"]});
@@ -37,6 +39,7 @@ const RootLayout = async ({children}: Props) => {
             <main className="w-full h-full">
               {children}
             </main>
+            <Player />
             <ToastWrapper />
           </UserProvider>
         </SupabaseProvider>
