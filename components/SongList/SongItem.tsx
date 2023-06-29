@@ -17,14 +17,14 @@ const SongItem = (props: Props) => {
   const {setActiveId, setPlayList} = usePlayer();
 
   const onClickPlayHandler = (songId: number) => {
-    setPlayList([]);
+    setPlayList([songId]);
     setActiveId(songId);
   };
 
   return (
     <div
       className="relative flex flex-col justify-center items-center gap-4 p-3 rounded-md bg-neutral-400/5 group overflow-hidden cursor-pointer transition-colors hover:bg-neutral-400/10"
-      onClick={() => {}}
+      onClick={onClickPlayHandler.bind(null, song.id)}
     >
       <div className="absolute top-0 left-0 w-full h-full bg-black/0 transition-colors group-hover:bg-black/60 z-10" />
       <div className="relative w-full aspect-square rounded-md overflow-hidden">
@@ -34,10 +34,7 @@ const SongItem = (props: Props) => {
           src={imageUrl || "/images/song-default-image.webp"}
           alt={`${song.title} image`}
         />
-        <div
-          className="absolute top-[50%] left-[50%] -translate-x-[50%] -translate-y-[50%] z-20"
-          onClick={onClickPlayHandler.bind(null, song.id)}
-        >
+        <div className="absolute top-[50%] left-[50%] -translate-x-[50%] -translate-y-[50%] z-20">
           <PlayBtn />
         </div>
       </div>

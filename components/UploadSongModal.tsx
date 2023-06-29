@@ -9,7 +9,7 @@ import { AnimatePresence, motion } from "framer-motion";
 import { twMerge } from "tailwind-merge";
 import { toast } from "react-hot-toast";
 import uniqueId from "uniqid";
-import { useSupabaseClient } from "@supabase/auth-helpers-react";
+import { SupabaseClient, useSessionContext } from "@supabase/auth-helpers-react";
 import { AiOutlineUser } from "react-icons/ai";
 import { MdDriveFileRenameOutline } from "react-icons/md";
 import { BiLoaderAlt } from "react-icons/bi";
@@ -22,8 +22,8 @@ import { UserContext } from "@/context/UserProvider";
 import { Database } from "@/types/supabase";
 import { imageProcessor } from "@/utils/imageCompression";
 
-const AUTHOR_NAME_REGEX = /^[A-Za-zÀ-ž0-9\s]{3,32}$/;
-const SONG_TITLE_REGEX = /^[A-Za-zÀ-ž0-9_\-\s]{3,32}$/;
+const AUTHOR_NAME_REGEX = /^[A-Za-zÀ-ž0-9'\s]{3,32}$/;
+const SONG_TITLE_REGEX = /^[A-Za-zÀ-ž0-9'_\-\s]{3,32}$/;
 
 const SongFormSchema = z.object({
   songAuthor: z
@@ -50,7 +50,8 @@ const UploadSongModal = () => {
 
   const {userDetails} = useContext(UserContext);
 
-  const supabase = useSupabaseClient<Database>();
+  const supabase = useSessionContext();
+  const supabaseClient: SupabaseClient<Database> = supabase.supabaseClient;
 
   const {isOpen, onOpenChange} = useUploadModal();
 
@@ -145,7 +146,7 @@ const UploadSongModal = () => {
       .toLowerCase();
 
       /** Subir la canción al bucket */
-      const {data: songData, error: songError} = await supabase
+      const {data: songData, error: songError} = await supabaseClient
       .storage
       .from("songs")
       .upload(`user-${userDetails?.id}/song-${songName.replace(" ", "-")}-${songId}`, selectedAudioFile, {
@@ -158,7 +159,7 @@ const UploadSongModal = () => {
       };
 
       /** Subir la imagen de la canción al bucket */
-      const {data: imageData, error: imageError} = await supabase
+      const {data: imageData, error: imageError} = await supabaseClient
       .storage
       .from("images")
       .upload(`user-${userDetails?.id}/image-${songImageFileName}-${songId}`, selectedImageFile, {
@@ -171,7 +172,7 @@ const UploadSongModal = () => {
       };
 
       /** Almacenar la data de la canción en la base de datos */
-      const {error: dbError} = await supabase.from("songs").insert({
+      const {error: dbError} = await supabaseClient.from("songs").insert({
         user_id: userDetails!.id,
         title: songName,
         author: songAuthor,
@@ -315,7 +316,7 @@ const UploadSongModal = () => {
                   exit={{width: 0, opacity: 0}}
                 >
                   <img
-                    className="block w-auto h-[100px] aspect-video object-cover object-center rounded-sm"
+                    className="block w-auto h-[120px] aspect-square object-cover object-center rounded-sm"
                     src={selectedImagePreview}
                     alt="Selected image preview"
                   />
