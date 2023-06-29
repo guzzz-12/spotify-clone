@@ -57,7 +57,7 @@ const PlayerTimeSlider = ({playerRef}: Props) => {
   return (
     <form className="flex justify-between items-center gap-3">
       <Slider.Root
-        className="relative flex items-center w-full h-5 select-none touch-none"
+        className="relative flex items-center w-full h-5 flex-grow-1 select-none touch-none"
         defaultValue={currentTime}
         max={duration[0]}
         step={1}
@@ -74,14 +74,14 @@ const PlayerTimeSlider = ({playerRef}: Props) => {
         </Slider.Track>
       </Slider.Root>
 
-      <div className="flex justify-center items-center gap-1 flex-shrink-0">
-        <p className="text-sm">
+      <div className="flex justify-between items-center w-[100px] flex-shrink-0">
+        <p className="w-full text-sm">
           {currentTimeParsed}
         </p>
 
-        <span>/</span>
+        <span className="block w-3 flex-shrink-0">/</span>
 
-        <p className="text-sm">
+        <p className="w-full text-sm">
           {timeParser(duration).minutes}:{timeParser(duration).seconds}
         </p>
       </div>
