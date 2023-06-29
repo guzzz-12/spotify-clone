@@ -54,7 +54,7 @@ const PlayerContent = (props: Props) => {
             {isLoading && !song && <SongLibraryItemSkeleton />}
             {song &&
               <>
-                <SongLibraryItem song={song} onClick={() => {}} />
+                <SongLibraryItem song={song} />
                 <LikeBtn songId={song.id} />
               </>
             }

@@ -42,10 +42,7 @@ const LikedSongsList = ({likedSongs}: Props) => {
             className="flex items-center w-full gap-4"
           >
             <div className="relative flex-grow">
-              <SongLibraryItem
-                song={song}
-                onClick={() => {}}
-              />
+              <SongLibraryItem song={song}/>
               <div className="absolute right-3 top-[50%] -translate-y-[50%]">
                 <LikeBtn songId={song.id}/>
               </div>

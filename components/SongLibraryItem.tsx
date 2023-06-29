@@ -2,20 +2,22 @@
 
 import Image from "next/image";
 import useLoadImage from "@/hooks/useLoadImage";
+import usePlayer from "@/hooks/usePlayer";
 import { Song } from "@/types";
 
 interface Props {
   song: Song;
-  onClick: () => void;
 };
 
-const SongLibraryItem = ({song, onClick}: Props) => {
+const SongLibraryItem = ({song}: Props) => {
   const imageUrl = useLoadImage(song);
 
+  const {setActiveId} = usePlayer();
+
   return (
-    <div
+    <button
       className="flex items-center gap-3 w-full p-2 rounded-md cursor-pointer hover:bg-neutral-800/50"
-      onClick={onClick.bind(song.id)}
+      onClick={() => setActiveId(song.id)}
     >
       <div className="relative w-12 h-12 flex-shrink-0 rounded-md overflow-hidden">
         <Image
@@ -26,11 +28,11 @@ const SongLibraryItem = ({song, onClick}: Props) => {
         />
       </div>
 
-      <div className="flex flex-col justify-center items-start overflow-hidden">
+      <div className="flex flex-col justify-center items-start overflow-hidden text-left">
         <p className="w-full text-white truncate">{song.title}</p>
         <p className="w-full text-sm text-neutral-400 truncate">{song.author}</p>
       </div>
-    </div>
+    </button>
   )
 };
 

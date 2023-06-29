@@ -45,11 +45,7 @@ const SongLibrary = ({userSongs}: Props) => {
       </div>
 
       <div className="flex flex-col gap-2 mt-5">
-        {userSongs.map(song => {
-          return (
-            <SongLibraryItem key={song.id} song={song} onClick={() => {}} />
-          )
-        })}
+        {userSongs.map(song => <SongLibraryItem key={song.id} song={song} />)}
       </div>
     </div>
   )
