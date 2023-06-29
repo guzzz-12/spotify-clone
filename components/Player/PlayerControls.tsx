@@ -1,3 +1,5 @@
+"use client"
+
 import { MutableRefObject } from "react";
 import { twJoin } from "tailwind-merge";
 import { Tooltip } from "react-tooltip";
@@ -20,7 +22,7 @@ const PlayerControls = (props: Props) => {
 
   const {playList} = usePlayer();
 
-  const isPlaylist = playList.length > 0;
+  const isPlaylist = playList.length > 1;
 
   const onPlayHandler = () => {
     setIsPlaying(true);

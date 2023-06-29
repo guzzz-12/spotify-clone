@@ -1,8 +1,10 @@
 "use client"
 
-import { useRef } from "react";
-import { FaTimes } from "react-icons/fa";
+import { useRef, useState } from "react";
 import { AnimatePresence, motion } from "framer-motion";
+import { FaTimes } from "react-icons/fa";
+import { TbArrowsMaximize } from "react-icons/tb";
+import { BsDash } from "react-icons/bs";
 import PlayerContent from "./PlayerContent";
 import usePlayer from "@/hooks/usePlayer";
 import useGetSongById from "@/hooks/useGetSongById";
@@ -18,6 +20,8 @@ const Player = () => {
   const {activeId, resetPlayer} = usePlayer();
   const {songData, songUrl, isLoading} = useGetSongById(activeId);
 
+  const [isMinimized, setIsMinimized] = useState(false);
+
   /**
    * Actualizar el volumen inicial del reproductor
    * cuando el usuario actualice el volumen.
@@ -30,17 +34,30 @@ const Player = () => {
     <AnimatePresence>
       {activeId &&
         <motion.div
-          className="fixed bottom-0 w-full min-h-[80px] px-4 py-2 bg-black"
+          className="fixed bottom-0 w-full px-4 py-2 bg-black z-[900]"
           initial={{y: "100%", opacity: 0}}
           animate={{y: 0, opacity: 1}}
           exit={{y: "100%", opacity: 0}}
         >
-          <button
-            className="absolute top-0 right-3 p-2 text-white rounded-full outline-1 focus:outline-white"
-            onClick={() => resetPlayer()}
-          >
-            <FaTimes size={18} />
-          </button>
+          <div className="absolute top-0 right-3 flex justify-between items-center gap-0 -translate-y-[100%] bg-black">
+            <button
+              className="px-2 py-1 text-white rounded-full outline-1 focus:outline-white"
+              onClick={() => setIsMinimized((prev) => !prev)}
+            >
+              {isMinimized &&
+                <TbArrowsMaximize size={20} />
+              }
+              {!isMinimized &&
+                <BsDash size={20} />
+              }
+            </button>
+            <button
+              className="px-2 py-1 text-white rounded-full outline-1 focus:outline-white"
+              onClick={() => resetPlayer()}
+            >
+              <FaTimes size={20} />
+            </button>
+          </div>
           <PlayerContent
             key={songUrl}
             song={songData}
@@ -48,6 +65,7 @@ const Player = () => {
             initialVolume={initialVolumeRef.current}
             updateInitialVolume={updateInitialVolume}
             isLoading={isLoading}
+            isMinimized={isMinimized}
           />
         </motion.div>
       }

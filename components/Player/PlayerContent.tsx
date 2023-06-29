@@ -1,6 +1,7 @@
 "use client"
 
 import { useState, useEffect, useRef } from "react";
+import { motion } from "framer-motion";
 import PlayerControls from "./PlayerControls";
 import LikeBtn from "../LikeBtn";
 import SongLibraryItem from "../SongLibraryItem";
@@ -16,10 +17,11 @@ interface Props {
   initialVolume: number[];
   updateInitialVolume: (vol: number[]) => void;
   isLoading: boolean;
+  isMinimized: boolean;
 };
 
 const PlayerContent = (props: Props) => {
-  const {song, songUrl, initialVolume, updateInitialVolume, isLoading} = props;
+  const {song, songUrl, initialVolume, updateInitialVolume, isLoading, isMinimized} = props;
 
   const audioPlayerRef = useRef<HTMLAudioElement | null>(null);
 
@@ -42,9 +44,13 @@ const PlayerContent = (props: Props) => {
 
   return (
     <div className="flex flex-col gap-1 w-full h-full">
-      <div className="flex justify-between items-center h-full">
-        <div className="flex justify-start w-full">
-          <div className="flex items-center gap-4 min-w-[150px]">
+      <motion.div
+        key="player-controls"
+        className="flex justify-between items-center h-full overflow-hidden"
+        animate={{height: isMinimized ? 0 : "auto"}}
+      >
+        <div className="flex justify-start w-full h-full">
+          <div className="flex items-center gap-4 flex-shrink-0 min-w-[150px]">
             {isLoading && !song && <SongLibraryItemSkeleton />}
             {song &&
               <>
@@ -54,7 +60,7 @@ const PlayerContent = (props: Props) => {
             }
           </div>
         </div>
-
+        
         <div className="w-full">
           <PlayerControls
             isPaused={isPaused}
@@ -86,7 +92,7 @@ const PlayerContent = (props: Props) => {
             <source src={songUrl} />
           </audio>
         }
-      </div>
+      </motion.div>
 
       <PlayerTimeSlider playerRef={audioPlayerRef} />
     </div>
