@@ -1,8 +1,9 @@
 "use client"
 
 import { useEffect, useState } from "react";
+import { SupabaseClient, useSessionContext } from "@supabase/auth-helpers-react";
 import { Song } from "@/types";
-import { useSessionContext } from "@supabase/auth-helpers-react";
+import { Database } from "@/types/supabase";
 
 /**
  * Custom hook para consultar las canciones likeadas del usuario autenticado
@@ -11,7 +12,9 @@ const useGetLikedSongs = (loadSongs: boolean) => {
   const [likedSongs, setLikedSongs] = useState<Song[]>([]);
   const [loadingLikedSongs, setLoadingLikedSongs] = useState(false);
 
-  const {supabaseClient, session} = useSessionContext();
+  const supabase = useSessionContext();
+  const supabaseClient: SupabaseClient<Database> = supabase.supabaseClient;
+  const session = supabase.session;
 
   useEffect(() => {
     const getLikedSongs = async () => {

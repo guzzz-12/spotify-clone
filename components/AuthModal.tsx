@@ -2,7 +2,7 @@
 
 import { useEffect } from "react";
 import { useRouter } from "next/navigation";
-import { useSupabaseClient, useSessionContext } from "@supabase/auth-helpers-react";
+import { SupabaseClient, useSessionContext } from "@supabase/auth-helpers-react";
 import { Auth } from "@supabase/auth-ui-react";
 import { ThemeSupa } from "@supabase/auth-ui-shared";
 import GenericModal from "./GenericModal"
@@ -11,8 +11,9 @@ import { Database } from "@/types/supabase";
 
 const AuthModal = () => {
   const router = useRouter();
-  const supabase = useSupabaseClient<Database>();
-  const {session} = useSessionContext();
+  const supabase = useSessionContext();
+  const session = supabase.session;
+  const supabaseClient: SupabaseClient<Database> = supabase.supabaseClient;
 
   const {isOpen, onOpenChange} = useAuthModal();
 
@@ -32,7 +33,7 @@ const AuthModal = () => {
       onOpenChange={onOpenChange}
     >
       <Auth
-        supabaseClient={supabase}
+        supabaseClient={supabaseClient}
         theme="dark"
         magicLink
         providers={["github", "google"]}
