@@ -1,6 +1,6 @@
 "use client"
 
-import { MutableRefObject } from "react";
+import { MutableRefObject, useEffect, useState } from "react";
 import { twJoin } from "tailwind-merge";
 import { Tooltip } from "react-tooltip";
 import { FaPlay, FaPause, FaStop } from "react-icons/fa";
@@ -20,10 +20,25 @@ interface Props {
 const PlayerControls = (props: Props) => {
   const {isPaused, isPlaying, isStopped, setIsPaused, setIsPlaying, setIsStopped} = props;
 
-  const {playList} = usePlayer();
+  const [isFirstSong, setIsFirstSong] = useState(true);
+  const [isLastSong, setIsLastSong] = useState(false);
 
+  const {activeId, playList, setActiveId} = usePlayer();
   const isPlaylist = playList.length > 1;
 
+  
+  // Verificar si es la primera o la última canción
+  useEffect(() => {
+    if (isPlaylist) {
+      const currentSongIndex = playList.findIndex(el => el === activeId);
+  
+      setIsFirstSong(currentSongIndex === 0);
+      setIsLastSong(currentSongIndex === playList.length - 1);      
+    };
+  }, [activeId, playList, isPlaylist]);
+
+
+  // Iniciar la reproducción
   const onPlayHandler = () => {
     setIsPlaying(true);
     setIsPaused(false);
@@ -34,6 +49,7 @@ const PlayerControls = (props: Props) => {
     }
   };
 
+  // Pausar la reproducción
   const onPauseHandler = () => {
     setIsPlaying(false);
     setIsPaused(true);
@@ -44,6 +60,7 @@ const PlayerControls = (props: Props) => {
     }
   };
 
+  // Detener la reproducción
   const onStopHandler = () => {
     setIsPlaying(false);
     setIsPaused(false);
@@ -55,6 +72,26 @@ const PlayerControls = (props: Props) => {
     }
   };
 
+
+  // Reproducir la siguiente/anterior canción (si la hay)
+  const onChangeSongHandler = (direction: "next" | "prev") => {
+    if (!isPlaylist) {
+      return false;
+    };
+
+    const currentSongIndex = playList.findIndex(el => el === activeId);
+    
+    if (direction === "next" && !isLastSong) {
+      const nextSongId = playList[currentSongIndex + 1];
+      setActiveId(nextSongId);
+    };
+
+    if (direction === "prev" && !isFirstSong) {
+      const prevSongId = playList[currentSongIndex - 1];
+      setActiveId(prevSongId);
+    };
+  };
+
   return (
     <div className="flex justify-center items-center gap-6">
       <Tooltip id="play-next" />
@@ -64,7 +101,8 @@ const PlayerControls = (props: Props) => {
         className="p-1 rounded-full disabled:cursor-not-allowed disabled:opacity-60"
         data-tooltip-id="play-prev"
         data-tooltip-content="Play previous song"
-        disabled={!isPlaylist}
+        disabled={!isPlaylist || isFirstSong}
+        onClick={onChangeSongHandler.bind(null, "prev")}
       >
         <AiFillStepBackward className="text-white" size={30} />
       </button>
@@ -94,7 +132,8 @@ const PlayerControls = (props: Props) => {
         className="p-1 rounded-full disabled:cursor-not-allowed disabled:opacity-60"
         data-tooltip-id="play-next"
         data-tooltip-content="Play next song"
-        disabled={!isPlaylist}
+        disabled={!isPlaylist || isLastSong}
+        onClick={onChangeSongHandler.bind(null, "next")}
       >
         <AiFillStepForward className="text-white" size={30} />
       </button>
