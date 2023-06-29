@@ -1,9 +1,7 @@
-import { Suspense } from "react";
 import Header from "@/components/Header";
 import PageTitle from "@/components/PageTitle";
 import SearchInput from "./components/SearchInput";
 import SearchResults from "@/components/SearchResults";
-import Loading from "./loading";
 
 export type FilterBy = "title" | "author";
 
@@ -25,9 +23,7 @@ const SearchPage = async ({searchParams}: Props) => {
         <SearchInput />
       </Header>
       <div className="mt-2 mb-7 px-6">
-        <Suspense fallback={<Loading />}>
-          <SearchResults params={searchParams} />
-        </Suspense>
+        <SearchResults params={searchParams} />
       </div>
     </section>
   )
