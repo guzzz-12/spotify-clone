@@ -8,12 +8,13 @@ export interface UserDetails {
   full_name: string | null;
   avatar_url: string | null;
   billing_address: Json | null;
-  payment_method: Stripe.PaymentMethod[Stripe.PaymentMethod.Type] | null
+  payment_method: Stripe.PaymentMethod[Stripe.PaymentMethod.Type] | null;
+  stripe_customer: string | null;
 };
 
 export interface Product {
   active: boolean
-  description: string
+  description: string | null;
   id: string
   image: string
   metadata: Json
@@ -23,15 +24,19 @@ export interface Product {
 export interface Price {
   id: string;
   product_id: string;
-  active: boolean | null;
+  active?: boolean | null;
   description: string | null;
-  unit_amount: number;
+  unit_amount: number | null;
   currency: string;
   type: Stripe.Price.Type;
-  interval: Stripe.Price.Recurring.Interval | null;
-  interval_count: number | null;
-  trial_period_days: number | null;
-  products: Product | null;
+  interval?: Stripe.Price.Recurring.Interval | null;
+  interval_count?: number | null;
+  trial_period_days?: number | null;
+  metadata?: Json
+};
+
+export interface ProductsWithPrices extends Product {
+  prices: Price[] | null;
 };
 
 export interface Subscription {

@@ -3,7 +3,7 @@ export type Json =
   | number
   | boolean
   | null
-  | { [key: string]: Json }
+  | { [key: string]: Json | undefined }
   | Json[]
 
 export interface Database {
@@ -74,7 +74,7 @@ export interface Database {
           product_id: string
           trial_period_days: number | null
           type: Database["public"]["Enums"]["pricing_type"]
-          unit_amount: number
+          unit_amount: number | null
         }
         Insert: {
           active?: boolean | null
@@ -87,7 +87,7 @@ export interface Database {
           product_id: string
           trial_period_days?: number | null
           type: Database["public"]["Enums"]["pricing_type"]
-          unit_amount: number
+          unit_amount?: number | null
         }
         Update: {
           active?: boolean | null
@@ -114,7 +114,7 @@ export interface Database {
       products: {
         Row: {
           active: boolean
-          description: string
+          description: string | null
           id: string
           image: string
           metadata: Json
@@ -122,7 +122,7 @@ export interface Database {
         }
         Insert: {
           active: boolean
-          description: string
+          description?: string | null
           id: string
           image: string
           metadata: Json
@@ -130,7 +130,7 @@ export interface Database {
         }
         Update: {
           active?: boolean
-          description?: string
+          description?: string | null
           id?: string
           image?: string
           metadata?: Json
@@ -251,24 +251,27 @@ export interface Database {
           id: string
           last_name: string | null
           payment_method: Json | null
+          stripe_customer: string | null
         }
         Insert: {
-          avatar_url: string
+          avatar_url?: string | null
           billing_address?: Json | null
-          first_name: string
+          first_name?: string | null
           full_name?: string | null
           id: string
-          last_name: string
+          last_name?: string | null
           payment_method?: Json | null
+          stripe_customer?: string | null
         }
         Update: {
-          avatar_url?: string
+          avatar_url?: string | null
           billing_address?: Json | null
-          first_name?: string
+          first_name?: string | null
           full_name?: string | null
           id?: string
-          last_name?: string
+          last_name?: string | null
           payment_method?: Json | null
+          stripe_customer?: string | null
         }
         Relationships: [
           {
@@ -297,6 +300,7 @@ export interface Database {
         | "incomplete_expired"
         | "past_due"
         | "unpaid"
+        | "paused"
     }
     CompositeTypes: {
       [_ in never]: never
