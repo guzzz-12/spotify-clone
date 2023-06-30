@@ -6,9 +6,11 @@ import SupabaseProvider from "@/context/SupabaseProvider";
 import UserProvider from "@/context/UserProvider";
 import AuthModal from "@/components/AuthModal";
 import UploadSongModal from "@/components/UploadSongModal";
+import SubscriptionModal from "@/components/SubscriptionModal";
 import Player from "@/components/Player";
 import ToastWrapper from "@/components/ToastWrapper";
 import getCurrentUserSongs from "@/serverActions/getCurrentUserSongs";
+import getProductsWithPrices from "@/serverActions/getProductsWithPrices";
 import "react-tooltip/dist/react-tooltip.css";
 import "./globals.css";
 
@@ -26,7 +28,8 @@ interface Props {
 };
 
 const RootLayout = async ({children}: Props) => {
-  const currentUserSongs = await getCurrentUserSongs()
+  const currentUserSongs = await getCurrentUserSongs();
+  const productsWithPrices = await getProductsWithPrices();
 
   return (
     <html lang="en">
@@ -35,6 +38,7 @@ const RootLayout = async ({children}: Props) => {
           <UserProvider>
             <AuthModal />
             <UploadSongModal />
+            <SubscriptionModal products={productsWithPrices} />
             <Sidebar userSongs={currentUserSongs}/>
             <main className="w-full h-full">
               {children}

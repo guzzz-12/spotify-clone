@@ -56,10 +56,10 @@ const GenericModal = (props: Props) => {
                   <AiOutlineClose />
                 </button>
               </Dialog.Close>
-              <Dialog.Title className="mb-4 text-center text-xl font-bold">
+              <Dialog.Title className="mb-2 text-center text-xl font-bold">
                 {title}
               </Dialog.Title>
-              <Dialog.Description className="mb-5 text-sm text-center leading-normal">
+              <Dialog.Description className="mb-5 text-sm text-center text-gray-400 leading-normal">
                 {description}
               </Dialog.Description>
               <div>
