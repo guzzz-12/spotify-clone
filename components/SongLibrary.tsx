@@ -2,7 +2,8 @@
 
 import { useContext } from "react";
 import { TbPlaylist } from "react-icons/tb";
-import { AiOutlinePlus } from "react-icons/ai"
+import { AiOutlinePlus } from "react-icons/ai";
+import { Tooltip } from "react-tooltip";
 import SongLibraryItem from "./SongLibraryItem";
 import { UserContext } from "@/context/UserProvider";
 import useAuthModal from "@/hooks/useAuthModal";
@@ -29,6 +30,7 @@ const SongLibrary = ({userSongs}: Props) => {
 
   return (
     <div className="flex flex-col px-5 py-4">
+      <Tooltip id="add-song" />
       <div className="flex justify-between items-center">
         <div className="flex items-center gap-2">
           <TbPlaylist className="text-neutral-400" size={30} />
@@ -39,6 +41,8 @@ const SongLibrary = ({userSongs}: Props) => {
 
         <AiOutlinePlus
           className="text-neutral-400 cursor-pointer hover:text-white transition-colors"
+          data-tooltip-id="add-song"
+          data-tooltip-content="Add song"
           size={24}
           onClick={onClickHandler}
         />
