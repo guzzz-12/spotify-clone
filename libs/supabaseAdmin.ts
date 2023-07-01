@@ -229,15 +229,15 @@ export const manageSubscriptionStatus = async (props: {subscriptionId: string, c
       price_id: subscription.items.data[0].price.id,
       status,
       quantity: 0,
-      created: toDateTime(created).toTimeString(),
-      canceled_at: canceled_at ? toDateTime(canceled_at).toTimeString() : null,
-      cancel_at: cancel_at ? toDateTime(cancel_at).toTimeString() : null,
+      created: toDateTime(created).toISOString(),
+      canceled_at: canceled_at ? toDateTime(canceled_at).toISOString() : null,
+      cancel_at: cancel_at ? toDateTime(cancel_at).toISOString() : null,
       cancel_at_period_end,
-      ended_at: ended_at ? toDateTime(ended_at).toTimeString() : null,
-      current_period_end: toDateTime(current_period_end).toTimeString(),
-      current_period_start: toDateTime(current_period_start).toTimeString(),
-      trial_start: trial_start ? toDateTime(trial_start).toTimeString() : null,
-      trial_end: trial_end ? toDateTime(trial_end).toTimeString() : null
+      ended_at: ended_at ? toDateTime(ended_at).toISOString() : null,
+      current_period_end: toDateTime(current_period_end).toISOString(),
+      current_period_start: toDateTime(current_period_start).toISOString(),
+      trial_start: trial_start ? toDateTime(trial_start).toISOString() : null,
+      trial_end: trial_end ? toDateTime(trial_end).toISOString() : null
     };
 
     const {error} = await supabaseAdmin.from("subscriptions").upsert(subscriptionData);
