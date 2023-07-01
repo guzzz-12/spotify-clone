@@ -90,7 +90,7 @@ const SubscriptionModal = (props: Props) => {
     <GenericModal
       title="Subscribe to Spotify Clone"
       description="Subscribe to become a premium user"
-      isOpen={isOpen}
+      isOpen={true}
       onOpenChange={onOpenChange}
     >
       {products.length === 0 &&
@@ -100,25 +100,21 @@ const SubscriptionModal = (props: Props) => {
       }
 
       {products.length > 0 &&
-        <div>
+        <div className="flex flex-col justify-stretch items-center w-full">
           {products.map(product => {
             if (!product.prices?.length) {
-              return (
-                <div key={product.id}>
-                  <h2>No prices available</h2>
-                </div>
-              )
+              return null
             };
 
             return product.prices.map(price => {
               return (
                 <Button
                   key={price.id}
-                  className="mb-4"
+                  className="w-full mb-4"
                   disabled={isLoading || isLoadingUser || isLoadingSubscription}
                   onClickHandler={onClickHandler.bind(null, price)}
                 >
-                  Subscribe for {priceFormatted(price)} a {price.interval}
+                  {product.name}: {priceFormatted(price)} a {price.interval}
                 </Button>
               )
             })
