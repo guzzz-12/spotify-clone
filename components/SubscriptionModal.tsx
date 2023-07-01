@@ -90,7 +90,7 @@ const SubscriptionModal = (props: Props) => {
     <GenericModal
       title="Subscribe to Spotify Clone"
       description="Subscribe to become a premium user"
-      isOpen={true}
+      isOpen={isOpen}
       onOpenChange={onOpenChange}
     >
       {products.length === 0 &&
