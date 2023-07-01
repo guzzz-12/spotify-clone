@@ -67,7 +67,7 @@ const SubscriptionModal = (props: Props) => {
         throw new Error(`Request failed with status ${res.status}`)
       };
 
-      const {sessionId} = await res.json();
+      const resData = await res.json();
 
       const stripe = await getStripe();
 
@@ -75,7 +75,7 @@ const SubscriptionModal = (props: Props) => {
         return toast.error("Error creating subscription. Reload the page and try again")
       };
 
-      stripe.redirectToCheckout({sessionId});
+      stripe.redirectToCheckout({sessionId: resData.data.sessionId});
 
     } catch (error: any) {
       toast.error(`Error creating subscription: ${error.message}`)
