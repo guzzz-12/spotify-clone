@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { headers } from "next/headers";
+// import { headers } from "next/headers";
 import Stripe from "stripe";
 
 import { stripe } from "@/libs/stripe";
@@ -27,7 +27,8 @@ const webhookSecret = process.env.STRIPE_WEBHOOK_SECRET as string;
 
 export async function POST(request: NextRequest) {
   const rawBody = await request.text();
-  const signature = headers().get("stripe-signature");
+  const signature = request.headers.get("stripe-signature");
+  console.log({signature});
 
   if (!webhookSecret) {
     throw new Error("Secret del webhook de Stripe inválido")
