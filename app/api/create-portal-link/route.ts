@@ -3,7 +3,6 @@ import { cookies } from "next/headers";
 import { createRouteHandlerClient } from "@supabase/auth-helpers-nextjs";
 import { stripe } from "@/libs/stripe";
 import { getOrCreateCustomer } from "@/libs/supabaseAdmin";
-import { getUrl } from "@/libs/helpers";
 
 /**
  * Generar la URL de la sesión de checkout de Stripe
@@ -18,7 +17,11 @@ export async function POST() {
       return new NextResponse(`Unauthorized`, {status: 403})
     };
 
-    const customer = await getOrCreateCustomer({uuid: user.id, email: user.email!});
+    const customer = await getOrCreateCustomer({
+      uuid: user.id,
+      name: user.user_metadata.name || "",
+      email: user.email as string
+    });
 
     if (!customer) {
       return new NextResponse(`Customer not found for the user ${user.id}`, {status: 403})
@@ -26,7 +29,7 @@ export async function POST() {
 
     const {url} = await stripe.billingPortal.sessions.create({
       customer: customer.stripe_customer_id,
-      return_url: `${getUrl()}/account`
+      return_url: `${process.env.NEXT_PUBLIC_SITE_URL}/account`
     });
 
     return NextResponse.json({data: {sessionUrl: url}});

@@ -2,11 +2,9 @@ import { NextRequest, NextResponse } from "next/server";
 import { cookies } from "next/headers";
 import { createRouteHandlerClient } from "@supabase/auth-helpers-nextjs";
 import { stripe } from "@/libs/stripe";
-import { getURL } from "next/dist/shared/lib/utils";
 import { getOrCreateCustomer } from "@/libs/supabaseAdmin";
 import { Database } from "@/types/supabase";
 import { Price } from "@/types";
-import { getUrl } from "@/libs/helpers";
 
 interface Body {
   price: Price;
@@ -22,16 +20,20 @@ export async function POST(req: NextRequest) {
 
   const supabase = createRouteHandlerClient<Database>({cookies});
 
-  const {data: {user}} = await supabase.auth.getUser();
+  const {data} = await supabase.auth.getUser();
 
-  if (!user) {
+  if (!data.user) {
     return new NextResponse(`Unauthorized`, {status: 403})
   };
 
-  const customer = await getOrCreateCustomer({uuid: user.id, email: user.email!});
+  const customer = await getOrCreateCustomer({
+    uuid: data.user.id,
+    name: data.user.user_metadata.name || "",
+    email: data.user.email as string
+  });
 
   if (!customer) {
-    return new NextResponse(`Customer not found for the user ${user.id}`, {status: 403})
+    return new NextResponse(`Customer not found for the user ${data.user.id}`, {status: 403})
   };
 
   try {
@@ -41,8 +43,8 @@ export async function POST(req: NextRequest) {
       customer: customer.stripe_customer_id,
       mode: "subscription",
       allow_promotion_codes: true,
-      success_url: `${getURL()}/account`,
-      cancel_url: getUrl(),
+      success_url: `${process.env.NEXT_PUBLIC_SITE_URL}/account`,
+      cancel_url: process.env.NEXT_PUBLIC_SITE_URL,
       subscription_data: {
         metadata,
         trial_from_plan: false
