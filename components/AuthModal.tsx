@@ -37,6 +37,7 @@ const AuthModal = () => {
         theme="dark"
         magicLink
         providers={["github", "google"]}
+        redirectTo={process.env.NEXT_PUBLIC_SITE_URL}
         queryParams={{
           prompt: "consent"
         }}
