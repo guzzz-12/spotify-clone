@@ -124,8 +124,8 @@ export interface Database {
           active: boolean
           description?: string | null
           id: string
-          image: string
-          metadata: Json
+          image?: string | null
+          metadata?: Json | null
           name: string
         }
         Update: {

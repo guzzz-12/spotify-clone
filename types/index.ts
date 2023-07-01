@@ -13,12 +13,12 @@ export interface UserDetails {
 };
 
 export interface Product {
-  active: boolean
+  active: boolean;
   description: string | null;
-  id: string
-  image: string
-  metadata: Json
-  name: string
+  id: string;
+  image: string | null;
+  metadata: Json | null;
+  name: string;
 };
 
 export interface Price {
