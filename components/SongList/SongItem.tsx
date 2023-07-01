@@ -1,10 +1,12 @@
 "use client"
 
 import Image from "next/image";
+import { useUser } from "@supabase/auth-helpers-react";
 import PlayBtn from "./PlayBtn";
 import useLoadImage from "@/hooks/useLoadImage";
 import usePlayer from "@/hooks/usePlayer";
 import { Song } from "@/types";
+import useAuthModal from "@/hooks/useAuthModal";
 
 interface Props {
   song: Song;
@@ -13,13 +15,23 @@ interface Props {
 const SongItem = (props: Props) => {
   const {song} = props;
 
+  const user = useUser();
+  const authModal = useAuthModal();
+
   const imageUrl = useLoadImage(song);
   const {setActiveId, setPlayList} = usePlayer();
 
   const onClickPlayHandler = (songId: number) => {
+    // Pedir autenticación si no está logueado
+    if (!user) {
+      authModal.onOpenChange(true);
+      return null;
+    };
+    
     setPlayList([songId]);
     setActiveId(songId);
   };
+
 
   return (
     <div
