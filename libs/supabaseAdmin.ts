@@ -35,6 +35,26 @@ export const upsertProduct = async (product: Stripe.Product) => {
   };
 };
 
+/** Eliminar un product y su price asociado */
+export const deleteProduct = async (productData: Stripe.Product) => {
+  try {
+    const {error} = await supabaseAdmin
+    .from("products")
+    .delete()
+    .eq("id", productData.id)
+    .single();
+
+    if (error) {
+      throw new Error(error.message)
+    };
+
+    console.log(`Producto ${productData.id} (${productData.name}) eliminado exitosamente`)
+    
+  } catch (error: any) {
+    console.log(`Error eliminando producto: ${error.message}`)
+  }
+};
+
 /** Actualizar o insertar un price de Stripe en la base de datos */
 export const upsertPrice = async (priceData: Stripe.Price) => {
   const price: Price = {

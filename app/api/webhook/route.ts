@@ -3,11 +3,12 @@ import { NextRequest, NextResponse } from "next/server";
 import Stripe from "stripe";
 
 import { stripe } from "@/libs/stripe";
-import { upsertProduct, upsertPrice, manageSubscriptionStatus } from "@/libs/supabaseAdmin";
+import { upsertProduct, upsertPrice, manageSubscriptionStatus, deleteProduct } from "@/libs/supabaseAdmin";
 
 enum StripeEvents {
   PRODUCT_CREATED = "product.created",
   PRODUCT_UPDATED = "product.updated",
+  PRODUCT_DELETED = "product.deleted",
   PRICE_CREATED = "price.created",
   PRICE_UPDATED = "price.updated",
   CHECKOUT_SESSION_COMPLETED = "checkout.session.completed",
@@ -42,6 +43,12 @@ export async function POST(request: NextRequest) {
       case StripeEvents.PRODUCT_UPDATED: {
         const productData = event.data.object as Stripe.Product;
         await upsertProduct(productData);
+        break;
+      };
+
+      case StripeEvents.PRODUCT_DELETED: {
+        const productData = event.data.object as Stripe.Product;
+        await deleteProduct(productData);
         break;
       };
 
