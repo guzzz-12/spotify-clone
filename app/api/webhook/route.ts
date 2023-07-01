@@ -16,12 +16,6 @@ enum StripeEvents {
   CUSTOMER_SUBSCRIPTION_DELETED = "customer.subscription.deleted"
 };
 
-export const config = {
-  api: {
-    bodyParser: false
-  }
-};
-
 // Secret del endpoint del webhook para generar el signature
 const webhookSecret = process.env.STRIPE_WEBHOOK_SECRET as string;
 
