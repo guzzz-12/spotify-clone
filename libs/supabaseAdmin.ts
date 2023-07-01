@@ -44,7 +44,7 @@ export const upsertPrice = async (priceData: Stripe.Price) => {
     description: null,
     interval: priceData.recurring?.interval,
     interval_count: priceData.recurring?.interval_count,
-    product_id: typeof priceData.product,
+    product_id: priceData.product as string,
     trial_period_days: priceData.recurring?.trial_period_days,
     type: priceData.type,
     unit_amount: priceData.unit_amount,
