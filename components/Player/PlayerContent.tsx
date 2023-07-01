@@ -25,7 +25,7 @@ const PlayerContent = (props: Props) => {
 
   const audioPlayerRef = useRef<HTMLAudioElement | null>(null);
 
-  const {activeId} = usePlayer();
+  const {activeId, playList, setActiveId} = usePlayer();
 
   const [isPlaying, setIsPlaying] = useState(true);
   const [isPaused, setIsPaused] = useState(false);
@@ -36,10 +36,20 @@ const PlayerContent = (props: Props) => {
   // para evitar que la canción anterior siga sonando antes de que
   // cargue la data de la nueva canción.
   useEffect(() => {
+    // Reproducir la siguiente canción automáticamente si es un playlist
+    if (audioPlayerRef.current && playList.length) {
+      audioPlayerRef.current.onended = () => {
+        const currentIndex = playList.findIndex(el => el === activeId);
+        if (currentIndex !== -1 && currentIndex + 1 < playList.length) {
+          setActiveId(playList[currentIndex + 1]);
+        }
+      }
+    };
+
     return () => {
       audioPlayerRef.current = null;
     }
-  }, [activeId, audioPlayerRef]);
+  }, [activeId, playList, audioPlayerRef]);
 
 
   return (
