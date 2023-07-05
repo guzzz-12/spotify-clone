@@ -4,9 +4,11 @@ import { useContext } from "react";
 import { TbPlaylist } from "react-icons/tb";
 import { AiOutlinePlus } from "react-icons/ai";
 import { Tooltip } from "react-tooltip";
+import { toast } from "react-hot-toast";
 import SongLibraryItem from "./SongLibraryItem";
 import { UserContext } from "@/context/UserProvider";
 import useAuthModal from "@/hooks/useAuthModal";
+import useSubscriptionModal from "@/hooks/useSubscriptionModal";
 import useUploadModal from "@/hooks/useUploadModal";
 import { Song } from "@/types";
 
@@ -15,17 +17,39 @@ interface Props {
 };
 
 const SongLibrary = ({userSongs}: Props) => {
-  const {user} = useContext(UserContext);
+  const {user, subscription, subscriptionError} = useContext(UserContext);
 
   const authModalState = useAuthModal();
+  const subscriptionModal = useSubscriptionModal();
   const uploadModalState = useUploadModal();
 
-  const onClickHandler = () => {
+  const onClickHandler = async () => {
+    // Chequear si el usuario está autenticado
     if (!user) {
       return authModalState.onOpenChange(true)
     };
 
-    uploadModalState.onOpenChange(true);
+    // Chequear si el usuario está suscrito
+    try {
+      // Si no posee suscripción, mostrar el modal de suscripción
+      if (subscriptionError) {
+        if (subscriptionError.code === "PGRST116") {
+          return subscriptionModal.onOpenChange(true)
+        };
+
+        throw new Error(subscriptionError.message)
+      };
+
+      if (!subscription && !subscriptionError) {
+        return subscriptionModal.onOpenChange(true)
+      };
+      
+      // Permitir subir la canció si está autenticado y suscrito
+      uploadModalState.onOpenChange(true);
+
+    } catch (error: any) {
+      toast.error(`Error checking subscription: ${error.message}`)
+    };
   };
 
   return (
