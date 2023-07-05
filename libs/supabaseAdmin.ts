@@ -263,6 +263,7 @@ export const manageSubscriptionStatus = async (props: {subscriptionId: string, c
       .from("subscriptions")
       .select("*")
       .eq("user_id", uuid)
+      .neq("id", subscriptionData.id)
       .single();
 
       // Eliminar la suscripción actual si la tiene
