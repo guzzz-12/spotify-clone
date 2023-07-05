@@ -199,8 +199,8 @@ export const updateUserBillingDetails = async (props: {uuid: string, payment_met
 };
 
 
-/** Crear o actualizar el status de la suscripción del usuario */
-export const manageSubscriptionStatus = async (props: {subscriptionId: string, customerId: string, action: "create" | "update"}) => {
+/** Crear, actualizar o eliminar la suscripción del usuario */
+export const manageSubscriptionStatus = async (props: {subscriptionId: string, customerId: string, action: "create" | "update" | "delete"}) => {
   const {customerId, subscriptionId, action} = props;
 
   try {
@@ -240,13 +240,29 @@ export const manageSubscriptionStatus = async (props: {subscriptionId: string, c
       trial_end: trial_end ? toDateTime(trial_end).toISOString() : null
     };
 
-    const {error} = await supabaseAdmin.from("subscriptions").upsert(subscriptionData);
+    if (action === "delete") {
+      const {error: deleteError} = await supabaseAdmin
+      .from("subscriptions")
+      .delete()
+      .eq("id", subscriptionId)
+      .single();
 
-    if (error) {
-      throw new Error(error.message)
-    };
+      if (deleteError) {
+        throw new Error(deleteError.message)
+      };
 
-    console.log(`Suscripción ${{usuario: uuid, customerId}} creada/actualizada correctamente`);
+      return console.log(`Suscripción ${{usuario: uuid, customerId}} eliminada correctamente`);
+
+    } else {
+      const {error} = await supabaseAdmin.from("subscriptions").upsert(subscriptionData);
+  
+      if (error) {
+        throw new Error(error.message)
+      };
+  
+      console.log(`Suscripción ${{usuario: uuid, customerId}} creada/actualizada correctamente`);
+    }
+    
 
     // Si la suscripción es nueva, actualizar el billing details del usuario en la DB
     if (action === "create") {

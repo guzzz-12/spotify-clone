@@ -60,8 +60,7 @@ export async function POST(request: NextRequest) {
       };
 
       case StripeEvents.CUSTOMER_SUBSCRIPTION_CREATED:
-      case StripeEvents.CUSTOMER_SUBSCRIPTION_UPDATED:
-      case StripeEvents.CUSTOMER_SUBSCRIPTION_DELETED: {
+      case StripeEvents.CUSTOMER_SUBSCRIPTION_UPDATED: {
         const subscriptionData = event.data.object as Stripe.Subscription;
         const {id, customer} = subscriptionData;
 
@@ -69,6 +68,20 @@ export async function POST(request: NextRequest) {
           subscriptionId: id,
           customerId: customer as string,
           action: event.type === StripeEvents.CUSTOMER_SUBSCRIPTION_CREATED ? "create" : "update"
+        });
+
+        break;
+      };
+
+      case StripeEvents.CUSTOMER_SUBSCRIPTION_DELETED:{
+        const subscriptionData = event.data.object as Stripe.Subscription;
+
+        const {id, customer} = subscriptionData;
+
+        await manageSubscriptionStatus({
+          subscriptionId: id,
+          customerId: customer as string,
+          action: "delete"
         });
 
         break;
