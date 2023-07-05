@@ -252,17 +252,35 @@ export const manageSubscriptionStatus = async (props: {subscriptionId: string, c
       };
 
       return console.log(`Suscripción ${{usuario: uuid, customerId}} eliminada correctamente`);
+    };
 
-    } else {
-      const {error} = await supabaseAdmin.from("subscriptions").upsert(subscriptionData);
-  
-      if (error) {
-        throw new Error(error.message)
+    // Si se creó una nueva suscripción
+    // eliminar la anterior si la posee
+    // para evitar múltiples suscripciones.
+    if (action === "create") {
+      // Verificar si ya posee una suscripción
+      const {data: currentSubscription} = await supabaseAdmin
+      .from("subscriptions")
+      .select("*")
+      .eq("user_id", uuid)
+      .single();
+
+      // Eliminar la suscripción actual si la tiene
+      // Al cancelar la suscripción en Stripe, el webhook
+      // la elimina automáticamente de la base de datos
+      // en el evento CUSTOMER_SUBSCRIPTION_DELETED
+      if (currentSubscription) {
+        await stripe.subscriptions.cancel(currentSubscription.id);
       };
-  
-      console.log(`Suscripción ${{usuario: uuid, customerId}} creada/actualizada correctamente`);
-    }
+    };
     
+    const {error} = await supabaseAdmin.from("subscriptions").upsert(subscriptionData);
+
+    if (error) {
+      throw new Error(error.message)
+    };
+
+    console.log(`Suscripción ${{usuario: uuid, customerId}} creada/actualizada correctamente`);
 
     // Si la suscripción es nueva, actualizar el billing details del usuario en la DB
     if (action === "create") {
