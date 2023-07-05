@@ -14,6 +14,7 @@ interface Body {
 
 /**
  * Generar la sesión de checkout de Stripe
+ * para crear o actualizar la suscripción.
  */
 export async function POST(req: NextRequest) {
   const {price, quantity, metadata} = (await req.json()) as Body;
@@ -68,4 +69,53 @@ export async function POST(req: NextRequest) {
     console.log(`Error creando sesión de Stripe: ${error.message}`);
     return new NextResponse("Internal server error", {status: 500})
   };
+};
+
+
+/**
+ * Cancelar la suscripción del usuario
+ */
+export async function DELETE(_req: NextRequest) {
+  try {
+    const supabase = createRouteHandlerClient<Database>({cookies});
+
+    const {data} = await supabase.auth.getUser();
+
+    if (!data.user) {
+      return new NextResponse(`Unauthorized`, {status: 403})
+    };
+
+    // Buscar la suscripción del usuario en la base de datos
+    const {data: subscription} = await supabase
+    .from("subscriptions")
+    .select("id")
+    .eq("user_id", data.user.id)
+    .single()
+
+    if (!subscription) {
+      return new NextResponse(`El usuario ${data.user.id} no posee suscripción`)
+    };
+
+    // Eliminar la suscripción
+    await stripe.subscriptions.cancel(subscription.id);
+
+    // Eliminar la suscripción del usuario en la base de datos
+    const {error: deleteSubscriptionError} = await supabase
+    .from("subscriptions")
+    .delete()
+    .eq("user_id", data.user.id)
+    .single();
+
+    if (deleteSubscriptionError) {
+      throw new Error(deleteSubscriptionError.message)
+    };
+
+    return NextResponse.json({
+      data: `La suscripción ${subscription.id} del usuario ${data.user.id} fue eliminada correctamente`
+    });
+    
+  } catch (error: any) {
+    console.log(`Error eliminando suscripción del usuario: ${error.message}`);
+    return new NextResponse("Internal server error", {status: 500})
+  }
 };
