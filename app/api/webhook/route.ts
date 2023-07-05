@@ -64,6 +64,21 @@ export async function POST(request: NextRequest) {
         const subscriptionData = event.data.object as Stripe.Subscription;
         const {id, customer} = subscriptionData;
 
+        // Eliminar la suscripción de la base de datos si se canceló
+        if (subscriptionData.status === "canceled") {
+          const subscriptionData = event.data.object as Stripe.Subscription;
+
+          const {id, customer} = subscriptionData;
+
+          await manageSubscriptionStatus({
+            subscriptionId: id,
+            customerId: customer as string,
+            action: "delete"
+          });
+          
+          return;
+        };
+
         await manageSubscriptionStatus({
           subscriptionId: id,
           customerId: customer as string,
@@ -73,7 +88,7 @@ export async function POST(request: NextRequest) {
         break;
       };
 
-      case StripeEvents.CUSTOMER_SUBSCRIPTION_DELETED:{
+      case StripeEvents.CUSTOMER_SUBSCRIPTION_DELETED: {
         const subscriptionData = event.data.object as Stripe.Subscription;
 
         const {id, customer} = subscriptionData;
