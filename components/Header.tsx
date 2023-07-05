@@ -7,8 +7,10 @@ import { twMerge, ClassNameValue } from "tailwind-merge";
 import { RxCaretLeft, RxCaretRight } from "react-icons/rx";
 import { HiHome } from "react-icons/hi";
 import { BiSearch } from "react-icons/bi";
-import { useSupabaseClient } from "@supabase/auth-helpers-react";
+import { AiOutlineUser } from "react-icons/ai";
 import toast from "react-hot-toast";
+import { Tooltip } from "react-tooltip";
+import { useSupabaseClient } from "@supabase/auth-helpers-react";
 
 import Button from "./Button";
 import useAuthModal from "@/hooks/useAuthModal";
@@ -21,7 +23,7 @@ interface Props {
 
 const Header = ({children, className}: Props) => {
   const btnRef = useRef<HTMLButtonElement | null>(null);
-  const {back, forward} = useRouter();
+  const {back, forward, push} = useRouter();
 
   const {user, userDetails, isLoadingUser} = useContext(UserContext);
   const supabase = useSupabaseClient();
@@ -62,16 +64,29 @@ const Header = ({children, className}: Props) => {
           </Link>
         </div>
 
-        <div className="flex justify-between items-center gap-4">
+        <div className="flex justify-between items-center gap-2">
           {user &&
-            <Button
-              ref={btnRef}
-              className="font-base text-white bg-transparent disabled:cursor-not-allowed"
-              disabled={isLoadingUser}
-              onClickHandler={logoutHandler}
-            >
-              Sign out
-            </Button>
+            <>
+              <Tooltip id="account-tooltip" />
+              <Button
+                ref={btnRef}
+                className="font-base text-white bg-transparent disabled:cursor-not-allowed"
+                disabled={isLoadingUser}
+                onClickHandler={logoutHandler}
+              >
+                Sign out
+              </Button>
+              <Button
+                ref={btnRef}
+                className="flex justify-center items-center w-10 h-10 text-black bg-white rounded-full disabled:cursor-not-allowed"
+                data-tooltip-id="account-tooltip"
+                data-tooltip-content="Your Account"
+                disabled={isLoadingUser}
+                onClickHandler={push.bind(null, "/account")}
+              >
+                <AiOutlineUser className="w-5 h-5 flex-shrink-0" />
+              </Button>
+            </>
           }
 
           {!user &&
