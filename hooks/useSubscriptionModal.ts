@@ -2,14 +2,19 @@ import { create } from "zustand";
 
 interface SubscriptionModalState {
   isOpen: boolean;
-  onOpenChange: (open: boolean) => void;
+  isUpdate?: boolean;
+  onOpenChange: (open: boolean, isUpdate?: boolean) => void;
 };
 
 /** State del modal de suscripción */
 const useSubscriptionModal = create<SubscriptionModalState>((set) => {
   return {
     isOpen: false,
-    onOpenChange: (open) => set({isOpen: open})
+    isUpdate: false,
+    onOpenChange: (open, isUpdate=false) => set({
+      isOpen: open,
+      isUpdate
+    })
   }
 });
 

@@ -28,9 +28,9 @@ const priceFormatted = (price: Price) => {
 const SubscriptionModal = (props: Props) => {
   const {products} = props;
   
-  const {user, subscription, isLoadingUser, isLoadingSubscription} = useContext(UserContext);
+  const {user, subscription, isLoadingUser, isLoadingSubscription, updateSubscriptionState} = useContext(UserContext);
 
-  const {isOpen, onOpenChange} = useSubscriptionModal();
+  const {isOpen, isUpdate, onOpenChange} = useSubscriptionModal();
 
   const [isLoading, setIsLoading] = useState(false);
 
@@ -41,14 +41,6 @@ const SubscriptionModal = (props: Props) => {
       return null
     };
 
-    if (subscription) {
-      setTimeout(() => {
-        onOpenChange(false)
-      }, 3000);
-
-      return toast.error("You are already subscribed")
-    };
-
     try {
       const data = {
         price,
@@ -56,7 +48,7 @@ const SubscriptionModal = (props: Props) => {
         metadata: {}
       };
 
-      const res = await fetch("/api/checkout", {
+      const res = await fetch("/api/subscription", {
         method: "POST",
         body: JSON.stringify(data),
         headers: new Headers({"Content-Type": "application/json"}),
@@ -79,23 +71,47 @@ const SubscriptionModal = (props: Props) => {
 
     } catch (error: any) {
       toast.error(`Error creating subscription: ${error.message}`)
-
+      
     } finally {
       setIsLoading(false)
     };
+  };
+  
+  
+  /** Cancelar la suscripción del usuario */
+  const cancelSubscriptionHandler = async () => {
+    try {
+      setIsLoading(true);
+      
+      await fetch("/api/subscription", {
+        method: "DELETE",
+        credentials: "same-origin"
+      });
+
+      toast("Your subscription was successfully cancelled");
+
+      updateSubscriptionState(null);
+      onOpenChange(false);
+      
+    } catch (error: any) {
+      toast.error(`Error canceling subscription: ${error.message}`);
+
+    } finally {
+      setIsLoading(false)
+    }
   };
 
 
   return (
     <GenericModal
-      title="Subscribe to Spotify Clone"
-      description="Subscribe to become a premium user"
+      title={isUpdate ? "Update subscription" : "Subscribe to Spotify Clone"}
+      description={isUpdate ? "Update or cancel your subscription to Spotify Clone" : "Become a premium user to upload your songs"}
       isOpen={isOpen}
       onOpenChange={onOpenChange}
     >
       {products.length === 0 &&
         <h2 className="text-lg text-center">
-          No products available
+          No subscritions available
         </h2>
       }
 
@@ -106,18 +122,38 @@ const SubscriptionModal = (props: Props) => {
               return null
             };
 
-            return product.prices.map(price => {
-              return (
-                <Button
-                  key={price.id}
-                  className="w-full mb-4"
-                  disabled={isLoading || isLoadingUser || isLoadingSubscription}
-                  onClickHandler={onClickHandler.bind(null, price)}
-                >
-                  {product.name}: {priceFormatted(price)} a {price.interval}
-                </Button>
-              )
-            })
+            return (
+              <>
+                {product.prices.map(price => {
+                  if (!subscription || subscription.prices!.id !== price.id) {
+                    return (
+                      <Button
+                        key={price.id}
+                        className="w-full mb-4"
+                        disabled={isLoading || isLoadingUser || isLoadingSubscription}
+                        onClickHandler={onClickHandler.bind(null, price)}
+                      >
+                        Subscribe to {product.name} ({priceFormatted(price)}/{price.interval})
+                      </Button>
+                    );
+                  };
+                  
+                  if (subscription && subscription.prices!.id === price.id) {
+                    return (
+                      <Button
+                        className="w-full mb-4"
+                        disabled={isLoading || isLoadingUser || isLoadingSubscription}
+                        onClickHandler={cancelSubscriptionHandler}
+                      >
+                        Cancel subscription to {product.name}
+                      </Button>
+                    )
+                  };
+
+                  return null;
+                })}
+              </>
+            )
           })}
         </div>
       }

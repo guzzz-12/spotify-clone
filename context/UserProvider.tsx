@@ -3,17 +3,20 @@
 import { ReactNode, createContext, useEffect, useState } from "react";
 import { SupabaseClient, User } from "@supabase/auth-helpers-nextjs";
 import { useSessionContext, useUser } from "@supabase/auth-helpers-react";
-import { Subscription, UserDetails } from "@/types";
+import { PostgrestError } from "@supabase/supabase-js";
+import { UserDetails, SubscriptionWithPricesAndProducts } from "@/types";
 import { Database } from "@/types/supabase";
 
 type UserContextType = {
   accessToken: string | null;
   user: User | null;
   userDetails: UserDetails | null;
-  subscription: Subscription | null;
+  subscription: SubscriptionWithPricesAndProducts | null;
   isLoadingUser: boolean;
   isLoadingSubscription: boolean;
   error: string | null;
+  subscriptionError: PostgrestError | null;
+  updateSubscriptionState: (data: SubscriptionWithPricesAndProducts | null) => void;
 };
 
 export const UserContext = createContext<UserContextType>({
@@ -23,7 +26,9 @@ export const UserContext = createContext<UserContextType>({
   subscription: null,
   isLoadingUser: false,
   isLoadingSubscription: false,
-  error: null
+  error: null,
+  subscriptionError: null,
+  updateSubscriptionState: () => {}
 });
 
 const UserProvider = ({children}: {children: ReactNode}) => {
@@ -34,10 +39,11 @@ const UserProvider = ({children}: {children: ReactNode}) => {
   const accessToken = supabase.session?.access_token ?? null;
 
   const [userDetails, setUserDetails] = useState<UserDetails | null>(null);
-  const [subscription, setSubscription] = useState<Subscription | null>(null);
+  const [subscription, setSubscription] = useState<SubscriptionWithPricesAndProducts | null>(null);
   const [isLoadingUser, setIsLoadingUser] = useState(false);
   const [isLoadingSubscription, setIsLoadingSubscription] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [subscriptionError, setSubscriptionError] = useState<PostgrestError | null>(null);
 
   /** Consultar los detalles del usuario */
   const getUserDetails = async () => {
@@ -88,14 +94,19 @@ const UserProvider = ({children}: {children: ReactNode}) => {
     try {
       setIsLoadingSubscription(true);
 
-      const {data, error} = await supabaseClient
+      const {data, error: subscriptionError} = await supabaseClient
       .from("subscriptions")
       .select("*, prices(*, products(*))")
       .in("status", ["trialing", "active"])
       .single();
 
-      if (error) {
-        throw error;
+      // Si no posee suscripción, mostrar el modal de suscripción
+      if (subscriptionError) {
+        if (subscriptionError.code === "PGRST116") {
+          return setSubscriptionError(subscriptionError)
+        };
+
+        throw new Error(subscriptionError.message)
       };
 
       setSubscription(data);
@@ -105,6 +116,12 @@ const UserProvider = ({children}: {children: ReactNode}) => {
     } finally {
       setIsLoadingSubscription(false)
     }
+  };
+
+
+  /** Actualizar el state de la suscripción desde otros componentes */
+  const updateSubscriptionState = (data: SubscriptionWithPricesAndProducts | null) => {
+    setSubscription(data);
   };
 
 
@@ -123,7 +140,9 @@ const UserProvider = ({children}: {children: ReactNode}) => {
         subscription,
         isLoadingUser,
         isLoadingSubscription,
-        error
+        error,
+        subscriptionError,
+        updateSubscriptionState
       }}
     >
       {children}
