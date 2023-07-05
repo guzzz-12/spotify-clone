@@ -58,6 +58,12 @@ export interface Subscription {
   prices: Price | null;
 };
 
+export type SubscriptionWithPricesAndProducts = Subscription & {
+  prices: (Price & {
+    products: Product | null
+  }) | null
+};
+
 export interface Song {
   id: number;
   author: string;
