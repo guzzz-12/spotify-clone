@@ -81,7 +81,8 @@ const SongLibrary = ({userSongs, loading}: Props) => {
               You don't have any songs yet
             </p>
             <span className="text-sm text-center text-neutral-500">
-              Start uploading songs by clicking on the plus icon above
+              {!user && "Signup to start uploading your songs"}
+              {user && "Start uploading songs by clicking on the plus icon above"}
             </span>
           </div>
         }
