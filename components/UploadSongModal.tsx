@@ -201,7 +201,10 @@ const UploadSongModal = () => {
       title="Upload song"
       description=""
       isOpen={isOpen}
-      onOpenChange={onOpenChange}
+      onOpenChange={(open: boolean) => {
+        if (isUploading) return null;
+        onOpenChange(open)
+      }}
     >
       <FormProvider {...methods}>
         <form
