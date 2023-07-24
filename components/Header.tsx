@@ -23,14 +23,16 @@ interface Props {
 
 const Header = ({children, className}: Props) => {
   const btnRef = useRef<HTMLButtonElement | null>(null);
-  const {back, forward, push} = useRouter();
+  const {back, forward, push, refresh} = useRouter();
 
-  const {user, userDetails, isLoadingUser} = useContext(UserContext);
+  const {user, isLoadingUser} = useContext(UserContext);
   const supabase = useSupabaseClient();
   const {onOpenChange} = useAuthModal();
 
   const logoutHandler = async () => {
     const {error} = await supabase.auth.signOut();
+
+    refresh();
 
     if (error) {
       toast.error(`Error logging user out: ${error.message}`)
