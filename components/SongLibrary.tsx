@@ -11,12 +11,14 @@ import useAuthModal from "@/hooks/useAuthModal";
 import useSubscriptionModal from "@/hooks/useSubscriptionModal";
 import useUploadModal from "@/hooks/useUploadModal";
 import { Song } from "@/types";
+import SongLibraryItemSkeleton from "./SongLibraryItemSkeleton";
 
 interface Props {
   userSongs: Song[];
+  loading: boolean;
 };
 
-const SongLibrary = ({userSongs}: Props) => {
+const SongLibrary = ({userSongs, loading}: Props) => {
   const {user, subscription, subscriptionError} = useContext(UserContext);
 
   const authModalState = useAuthModal();
@@ -73,7 +75,29 @@ const SongLibrary = ({userSongs}: Props) => {
       </div>
 
       <div className="flex flex-col gap-2 mt-5">
-        {userSongs.map(song => <SongLibraryItem key={song.id} song={song} />)}
+        {!loading && userSongs.length === 0 &&
+          <div className="flex flex-col justify-center items-center gap-1">
+            <p className="text-center text-neutral-400">
+              You don't have any songs yet
+            </p>
+            <span className="text-sm text-center text-neutral-500">
+              Start uploading songs by clicking on the plus icon above
+            </span>
+          </div>
+        }
+
+        {userSongs.map(song => {
+          return <SongLibraryItem key={song.id} song={song} />
+        })}
+
+        {loading &&
+          Array(5).fill("x").map((_el, i) => {
+            return (
+              <SongLibraryItemSkeleton key={i} />
+            )
+          })
+        }
+
       </div>
     </div>
   )
