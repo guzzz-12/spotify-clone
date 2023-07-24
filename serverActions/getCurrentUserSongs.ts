@@ -4,7 +4,7 @@ import { Song } from "@/types";
 import { Database } from "@/types/supabase";
 
 /** Server action para consultar las canciones del usuario autenticado */
-const getCurrentUserSongs = async (): Promise<Song[]> => {
+const getCurrentUserSongs = async (): Promise<{data: Song[], count: number | null}> => {
   const supabase = createServerComponentClient<Database>({
     cookies
   });
@@ -22,9 +22,9 @@ const getCurrentUserSongs = async (): Promise<Song[]> => {
     };
 
     // Consultar las canciones del usuario
-    const {data, error} = await supabase
+    const {data, count, error} = await supabase
     .from("songs")
-    .select("*")
+    .select("*", {count: "exact"})
     .eq("user_id", sessionData.session.user.id)
     .order("created_at", {ascending: false});
 
@@ -32,11 +32,11 @@ const getCurrentUserSongs = async (): Promise<Song[]> => {
       throw new Error(error.message)
     };
 
-    return data;
+    return {data, count};
     
   } catch (error: any) {
     console.log(`Error fetching songs: ${error.message}`);
-    return []
+    return {data: [], count: null}
   };
 };
 
