@@ -13,8 +13,13 @@ const AccountContent = () => {
   return (
     <section className="mb-7 px-6">
       {!isLoadingSubscription && !subscription && (
-        <div className="flex flex-col justify-center items-center gap-4">
-          <p>No active subscription</p>
+        <div className="flex flex-col justify-center items-center mt-4">
+          <p className="mb-1 text-center text-xl">
+            You currently don't have any active subscription
+          </p>
+          <p className="mb-6 text-center text-sm text-gray-200">
+            Subscribe to create and share your libraries
+          </p>
           <Button
             className="w-[300px]"
             onClickHandler={() => subscriptionModal.onOpenChange(true, true)}
@@ -25,15 +30,18 @@ const AccountContent = () => {
       )}
 
       {subscription &&
-        <div className="flex flex-col justify-center items-center gap-4">
-          <p>
+        <div className="flex flex-col justify-center items-center mt-4">
+          <p className="mb-1 text-center text-xl">
             You are currently subscribed to {subscription.prices?.products?.name}
+          </p>
+          <p className="mb-6 text-center text-sm text-gray-200">
+            You can update or cancel your subscription anytime
           </p>
           <Button
             className="w-[300px]"
             onClickHandler={subscriptionModal.onOpenChange.bind(null, true)}
           >
-            Update or cancel subscription
+            Update or cancel your subscription
           </Button>
         </div>
       }
