@@ -1,11 +1,22 @@
 import Image from "next/image";
+import { cookies } from "next/headers";
+import { redirect } from "next/navigation";
+import { createRouteHandlerClient } from "@supabase/auth-helpers-nextjs";
 import Header from "@/components/Header";
 import getLikedSongs from "@/serverActions/getLikedSongs";
 import LikedSongsList from "./LikedSongsList";
+import { Database } from "@/types/supabase";
 
 export const revalidate = 0;
 
 const LikedSongsPage = async () => {
+  const supabase = createRouteHandlerClient<Database>({cookies});
+  const {data} = await supabase.auth.getUser();
+
+  if (!data.user) {
+    return redirect("/");
+  }
+
   const likedSongs = await getLikedSongs();
 
   return (
