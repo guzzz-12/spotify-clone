@@ -4,6 +4,7 @@ import { useState, useEffect, useMemo, useRef } from "react";
 import { usePathname } from "next/navigation";
 import { Session, SupabaseClient, useSessionContext } from "@supabase/auth-helpers-react";
 import { twMerge } from "tailwind-merge";
+import { AnimatePresence, motion } from "framer-motion";
 import { IconType } from "react-icons";
 import { HiHome } from "react-icons/hi";
 import { BiSearch } from "react-icons/bi";
@@ -14,6 +15,8 @@ import SongLibrary from "./SongLibrary";
 import Button from "./Button";
 import { Song } from "@/types";
 import { Database } from "@/types/supabase";
+import SidebarPlaylistBtn from "./SidebarPlaylistBtn";
+import usePlayer from "@/hooks/usePlayer";
 
 export type RouteItem = {
   label: string;
@@ -31,6 +34,8 @@ const Sidebar = () => {
   const [page, setPage] = useState(1);
   const [loading, setLoading] = useState(true);
   const [totalSongs, setTotalSongs] = useState(0);
+
+  const {playList} = usePlayer();
 
   const endOfResults = songs.length >= Number(totalSongs);
 
@@ -51,7 +56,7 @@ const Sidebar = () => {
       };
 
       
-      const PAGE_SIZE = 5;
+      const PAGE_SIZE = 10;
       const user = session.user;
 
       
@@ -137,8 +142,8 @@ const Sidebar = () => {
   return (
     <aside className="flex h-full">
       <div className="hidden md:flex flex-col gap-2 w-[300px] h-full">
-        <Box>
-          <div className="flex flex-col gap-4 px-5 py-4">
+        <Box className="w-full">
+          <div className="flex flex-col gap-4 px-3 py-4">
             {routes.map(routeItem => {
               return (
                 <SidebarItem key={routeItem.label} routeItem={routeItem} />
@@ -147,7 +152,21 @@ const Sidebar = () => {
           </div>
         </Box>
 
-        <Box className="flex flex-col justify-start items-stretch h-full text-center custom-scrollbar overflow-y-auto">
+        {/* Botón para abrir el modal con el playlist */}
+        <AnimatePresence>
+          {playList.length > 0 &&
+            <motion.div
+              className="w-full"
+              initial={{height: 0, opacity: 0}}
+              animate={{height: "auto", opacity: 1}}
+              exit={{height: 0, opacity: 0}}
+            >
+              <SidebarPlaylistBtn />
+            </motion.div>
+          }
+        </AnimatePresence>
+
+        <Box className="flex flex-col justify-start items-stretch h-full pb-10 text-center custom-scrollbar overflow-y-auto">
           <SongLibrary userSongs={songs} loading={loading} />
 
           {currentSession && songs.length > 0 &&
