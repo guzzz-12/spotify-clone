@@ -1,15 +1,19 @@
 "use client"
 
 import { useState, useEffect, useRef } from "react";
+import Image from "next/image";
 import { motion } from "framer-motion";
+import { Tooltip } from "react-tooltip";
+import { MdPlaylistPlay } from "react-icons/md";
 import PlayerControls from "./PlayerControls";
 import LikeBtn from "../LikeBtn";
-import SongLibraryItem from "../SongLibraryItem";
 import PlayerVolumeSlider from "./PlayerVolumeSlider";
 import PlayerTimeSlider from "./PlayerTimeSlider";
 import SongLibraryItemSkeleton from "../SongLibraryItemSkeleton";
 import usePlayer from "@/hooks/usePlayer";
+import useLoadImage from "@/hooks/useLoadImage";
 import { Song } from "@/types";
+import usePlaylistModal from "@/hooks/usePlaylistModal";
 
 interface Props {
   song: Song | null;
@@ -26,6 +30,8 @@ const PlayerContent = (props: Props) => {
   const audioPlayerRef = useRef<HTMLAudioElement | null>(null);
 
   const {activeId, playList, setActiveId} = usePlayer();
+  const imageUrl = useLoadImage(song!);
+  const {openPlaylist} = usePlaylistModal();
 
   const [isPlaying, setIsPlaying] = useState(true);
   const [isPaused, setIsPaused] = useState(false);
@@ -62,10 +68,41 @@ const PlayerContent = (props: Props) => {
         <div className="flex justify-start w-full h-full">
           <div className="flex items-center gap-4 flex-shrink-0 min-w-[150px]">
             {isLoading && !song && <SongLibraryItemSkeleton />}
+
             {song &&
               <>
-                <SongLibraryItem song={song} />
-                <LikeBtn songId={song.id} />
+                <div className="flex justify-start items-center gap-2 px-2 py-1 border border-neutral-400 rounded-md bg-white">
+                  <Tooltip id="open-playlist" />
+
+                  <Image
+                    className="block border border-neutral-200 rounded-sm"
+                    width={50}
+                    height={50}
+                    src={imageUrl || "/images/song-default-image.webp"}
+                    alt={`${song.title} image`}
+                  />
+                  <div className="flex flex-col justify-start items-stretch gap-0">
+                    <p className="text-left text-neutral-900 font-medium">
+                      {song.title}
+                    </p>
+                    <p className="text-left text-xs text-neutral-700">
+                      {song.author}
+                    </p>
+                  </div>
+                </div>
+                
+                <div className="flex justify-center items-center p-1 rounded-full bg-white shadow-md">
+                  <LikeBtn songId={song.id} />
+                </div>
+
+                <button
+                  className="flex justify-center items-center p-1 rounded-full bg-white shadow-md"
+                  data-tooltip-id="open-playlist"
+                  data-tooltip-content="Open Playlist"
+                  onClick={() => openPlaylist(true)}
+                >
+                  <MdPlaylistPlay className="text-green-400" size={30} />
+                </button>
               </>
             }
           </div>

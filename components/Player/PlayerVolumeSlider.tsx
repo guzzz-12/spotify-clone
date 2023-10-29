@@ -31,7 +31,7 @@ const PlayerVolumeSlider = ({initialVolume, updateInitialVolume, playerRef}: Pro
         type="button"
         onClick={() => setVolume([0])}
       >
-        <BsFillVolumeMuteFill className="text-white cursor-pointer" size={30} />
+        <BsFillVolumeMuteFill className="text-neutral-900 cursor-pointer" size={30} />
       </button>
 
       <Slider.Root
@@ -46,10 +46,10 @@ const PlayerVolumeSlider = ({initialVolume, updateInitialVolume, playerRef}: Pro
         }}
       >
         <Slider.Track className="relative grow h-[3px] bg-gray-600 rounded-full">
-          <Slider.Range className="absolute h-full bg-white rounded-full" />
+          <Slider.Range className="absolute h-full bg-neutral-900 rounded-full" />
         </Slider.Track>
         <Slider.Thumb 
-          className="block w-5 h-5 bg-white rounded-[10px] cursor-pointer outline-2 outline-transparent focus:outline-blue-500 hover:bg-gray-200"
+          className="block w-5 h-5 bg-neutral-900 rounded-[10px] cursor-pointer outline-2 outline-transparent focus:outline-blue-500 hover:bg-neutral-700 transition-colors"
           aria-label="Volume"
         />
       </Slider.Root>
@@ -59,7 +59,7 @@ const PlayerVolumeSlider = ({initialVolume, updateInitialVolume, playerRef}: Pro
         type="button"
         onClick={() => setVolume([100])}
       >
-        <BsFillVolumeUpFill className="text-white cursor-pointer" size={30} />
+        <BsFillVolumeUpFill className="text-neutral-900 cursor-pointer" size={30} />
       </button>
     </form>
   )

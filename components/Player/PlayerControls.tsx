@@ -104,24 +104,24 @@ const PlayerControls = (props: Props) => {
         disabled={!isPlaylist || isFirstSong}
         onClick={onChangeSongHandler.bind(null, "prev")}
       >
-        <AiFillStepBackward className="text-white" size={30} />
+        <AiFillStepBackward className="text-neutral-900" size={30} />
       </button>
 
       <div className="flex justify-center items-center gap-2">
         <button
-          className={twJoin("p-2 rounded-full transition-colors", !isPlaying ? "bg-white" : "bg-green-400")}
+          className={twJoin("p-2 rounded-full transition-colors", !isPlaying ? "bg-neutral-300" : "bg-green-400")}
           onClick={onPlayHandler}
         >
           <FaPlay className="text-black cursor-pointer" size={24} />
         </button>
         <button
-          className={twJoin("p-2 rounded-full transition-colors", !isPaused ? "bg-white" : "bg-green-400")}
+          className={twJoin("p-2 rounded-full transition-colors", !isPaused ? "bg-neutral-300" : "bg-green-400")}
           onClick={onPauseHandler}
         >
           <FaPause className="text-black cursor-pointer" size={24} />
         </button>
         <button
-          className={twJoin("p-2 rounded-full transition-colors", !isStopped ? "bg-white" : "bg-green-400")}
+          className={twJoin("p-2 rounded-full transition-colors", !isStopped ? "bg-neutral-300" : "bg-green-400")}
           onClick={onStopHandler}
         >
           <FaStop className="text-black cursor-pointer" size={24} />
@@ -135,7 +135,7 @@ const PlayerControls = (props: Props) => {
         disabled={!isPlaylist || isLastSong}
         onClick={onChangeSongHandler.bind(null, "next")}
       >
-        <AiFillStepForward className="text-white" size={30} />
+        <AiFillStepForward className="text-neutral-900" size={30} />
       </button>
     </div>
   )

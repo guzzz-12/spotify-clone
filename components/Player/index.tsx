@@ -34,14 +34,14 @@ const Player = () => {
     <AnimatePresence>
       {activeId &&
         <motion.div
-          className="fixed bottom-0 w-full px-4 py-2 bg-black z-[900]"
+          className="fixed bottom-0 w-full px-4 py-2 border-t-2 border-green-400 bg-neutral-200 z-[900]"
           initial={{y: "100%", opacity: 0}}
           animate={{y: 0, opacity: 1}}
           exit={{y: "100%", opacity: 0}}
         >
-          <div className="absolute top-0 right-3 flex justify-between items-center gap-0 -translate-y-[100%] bg-black">
+          <div className="absolute -top-[2px] right-3 flex justify-between items-center gap-0 -translate-y-[100%] bg-neutral-200">
             <button
-              className="px-2 py-1 text-white rounded-full outline-1 focus:outline-white"
+              className="px-2 py-1 text-neutral-900 rounded-full"
               onClick={() => setIsMinimized((prev) => !prev)}
             >
               {isMinimized &&
@@ -51,13 +51,15 @@ const Player = () => {
                 <BsDash size={20} />
               }
             </button>
+            
             <button
-              className="px-2 py-1 text-white rounded-full outline-1 focus:outline-white"
+              className="px-2 py-1 text-neutral-900 rounded-full"
               onClick={() => resetPlayer()}
             >
               <FaTimes size={20} />
             </button>
           </div>
+
           <PlayerContent
             key={songUrl}
             song={songData}

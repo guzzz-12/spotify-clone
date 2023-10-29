@@ -75,13 +75,13 @@ const PlayerTimeSlider = ({playerRef}: Props) => {
       </Slider.Root>
 
       <div className="flex justify-between items-center w-[100px] flex-shrink-0">
-        <p className="w-full text-sm">
+        <p className="w-full text-sm text-neutral-900">
           {currentTimeParsed}
         </p>
 
-        <span className="block w-3 flex-shrink-0">/</span>
+        <span className="block w-3 flex-shrink-0 text-neutral-900">/</span>
 
-        <p className="w-full text-sm">
+        <p className="w-full text-sm text-neutral-900">
           {timeParser(duration).minutes}:{timeParser(duration).seconds}
         </p>
       </div>
