@@ -6,12 +6,12 @@ import { AiOutlinePlus } from "react-icons/ai";
 import { Tooltip } from "react-tooltip";
 import { toast } from "react-hot-toast";
 import SongLibraryItem from "./SongLibraryItem";
+import SongLibraryItemSkeleton from "./SongLibraryItemSkeleton";
 import { UserContext } from "@/context/UserProvider";
 import useAuthModal from "@/hooks/useAuthModal";
 import useSubscriptionModal from "@/hooks/useSubscriptionModal";
 import useUploadModal from "@/hooks/useUploadModal";
 import { Song } from "@/types";
-import SongLibraryItemSkeleton from "./SongLibraryItemSkeleton";
 
 interface Props {
   userSongs: Song[];
@@ -55,7 +55,7 @@ const SongLibrary = ({userSongs, loading}: Props) => {
   };
 
   return (
-    <div className="flex flex-col px-5 py-4">
+    <div className="flex flex-col px-3 py-4">
       <Tooltip id="add-song" />
       <div className="flex justify-between items-center">
         <div className="flex items-center gap-2">
@@ -73,6 +73,8 @@ const SongLibrary = ({userSongs, loading}: Props) => {
           onClick={onClickHandler}
         />
       </div>
+
+      <div className="w-full h-[1px] bg-neutral-800 mt-3" />
 
       <div className="flex flex-col gap-2 mt-5">
         {!loading && userSongs.length === 0 &&
