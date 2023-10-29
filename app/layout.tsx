@@ -9,6 +9,7 @@ import UploadSongModal from "@/components/UploadSongModal";
 import SubscriptionModal from "@/components/SubscriptionModal";
 import Player from "@/components/Player";
 import ToastWrapper from "@/components/ToastWrapper";
+import PlaylistModal from "@/components/PlaylistModal";
 import getProductsWithPrices from "@/serverActions/getProductsWithPrices";
 import "react-tooltip/dist/react-tooltip.css";
 import "./globals.css";
@@ -37,6 +38,7 @@ const RootLayout = async ({children}: Props) => {
             <AuthModal />
             <UploadSongModal />
             <SubscriptionModal products={productsWithPrices} />
+            <PlaylistModal />
             <Sidebar/>
             <main className="w-full h-full">
               {children}
