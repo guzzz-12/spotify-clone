@@ -23,8 +23,8 @@ const LikedSongsPage = async () => {
     <section className="page-wrapper">
       <Header>
         <div className="mt-16">
-          <div className="flex flex-col items-center gap-5 sm:flex-row">
-            <div className="relative w-32 h-32 lg:w-44 lg:h-44">
+          <div className="flex flex-col items-center gap-2 sm:gap-5 sm:flex-row">
+            <div className="relative w-full max-w-[120px] aspect-square">
               <Image
                 className="object-cover"
                 src="/images/like.webp"
@@ -32,12 +32,9 @@ const LikedSongsPage = async () => {
                 fill
               />
             </div>
-            <div className="flex flex-col gap-2 mt-4 md:mt-0">
-              <p className="hidden text-sm font-semibold md:block">
-                Playlist
-              </p>
-              <h1 className="font-bold text-4xl text-white sm:text-5xl lg:text-7xl">
-                Liked Songs
+            <div className="flex flex-col gap-2 md:mt-0">
+              <h1 className="font-bold text-3xl text-white">
+                Your Liked Songs
               </h1>
             </div>
           </div>
