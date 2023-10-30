@@ -2,6 +2,7 @@
 
 import Image from "next/image";
 import { useUser } from "@supabase/auth-helpers-react";
+import { twMerge } from "tailwind-merge";
 import { Tooltip } from "react-tooltip";
 import { MdOutlinePlaylistAdd } from "react-icons/md";
 import { FaTimes } from "react-icons/fa";
@@ -12,9 +13,10 @@ import useAuthModal from "@/hooks/useAuthModal";
 
 interface Props {
   song: Song;
+  borderLess?: boolean;
 };
 
-const SongLibraryItem = ({song}: Props) => {
+const SongLibraryItem = ({song, borderLess}: Props) => {
   const imageUrl = useLoadImage(song);
 
   const user = useUser();
@@ -37,7 +39,7 @@ const SongLibraryItem = ({song}: Props) => {
 
   return (
     <button
-      className="flex items-center gap-0 w-full p-2 rounded-md border border-neutral-800 cursor-pointer hover:bg-neutral-800/50"
+      className={twMerge("flex items-center gap-0 w-full p-2 cursor-pointer rounded-md  hover:bg-neutral-800/50 overflow-hidden", borderLess ? "border-none" : "border border-neutral-800")}
       onClick={onClickHandler}
     >
       <Tooltip id="playlist-btn" className="z-50" />
@@ -51,13 +53,13 @@ const SongLibraryItem = ({song}: Props) => {
         />
       </div>
 
-      <div className="flex flex-col justify-center items-start flex-grow text-left overflow-hidden">
+      <div className="flex flex-col justify-center items-start mr-1 flex-grow text-left overflow-hidden">
         <p className="w-full text-white truncate">{song.title}</p>
         <p className="w-full text-sm text-neutral-400 truncate">{song.author}</p>
       </div>
 
       <button
-        className="flex justify-center items-center w-7 h-7 p-[3px] self-start flex-shrink-0 rounded-full hover:bg-slate-600/60 transition-colors"
+        className="flex justify-center items-center w-7 h-7 p-[3px] flex-shrink-0 rounded-full hover:bg-slate-600/60 transition-colors"
         data-tooltip-id="playlist-btn"
         data-tooltip-content={isAddedToPlayList ? "Remove from playlist" : "Add to playlist"}
         onClick={(e) => {

@@ -7,12 +7,14 @@ import { twMerge, ClassNameValue } from "tailwind-merge";
 import { RxCaretLeft, RxCaretRight } from "react-icons/rx";
 import { HiHome } from "react-icons/hi";
 import { BiSearch } from "react-icons/bi";
-import { AiOutlineUser } from "react-icons/ai";
+import { AiOutlineUser, AiOutlineMenu } from "react-icons/ai";
 import toast from "react-hot-toast";
 import { Tooltip } from "react-tooltip";
 import { useSupabaseClient } from "@supabase/auth-helpers-react";
 
+import { Sheet, SheetContent, SheetTrigger } from "./ui/Sheet";
 import Button from "./Button";
+import SidebarContent from "./SidebarContent";
 import useAuthModal from "@/hooks/useAuthModal";
 import { UserContext } from "@/context/UserProvider";
 
@@ -58,9 +60,24 @@ const Header = ({children, className}: Props) => {
         </div>
 
         <div className="flex items-center gap-2 md:hidden">
+          <Sheet>
+            <SheetTrigger asChild>
+              <button className="flex justify-center items-center p-2 rounded-full bg-white transition-all hover:opacity-75">
+                <AiOutlineMenu size={20} className="text-black" />
+              </button>
+            </SheetTrigger>
+            <SheetContent
+              className="w-auto p-0 border-none bg-neutral-900"
+              side="left"
+            >
+              <SidebarContent />
+            </SheetContent>
+          </Sheet>
+
           <Link href="/" className="flex justify-center items-center p-2 rounded-full bg-white transition-all hover:opacity-75">
             <HiHome size={20} className="text-black" />
           </Link>
+
           <Link href="/search" className="flex justify-center items-center p-2 rounded-full bg-white transition-all hover:opacity-75">
             <BiSearch size={20} className="text-black" />
           </Link>

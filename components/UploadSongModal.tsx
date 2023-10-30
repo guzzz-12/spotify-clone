@@ -224,7 +224,7 @@ const UploadSongModal = () => {
             id="songName"
             type="text"
             name="songName"
-            placeholder="Song Name..."
+            placeholder="Song Title..."
             Icon={MdDriveFileRenameOutline}
             disabled={isUploading}
           />

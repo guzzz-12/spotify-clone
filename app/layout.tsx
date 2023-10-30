@@ -32,7 +32,7 @@ const RootLayout = async ({children}: Props) => {
 
   return (
     <html lang="en">
-      <body className={twMerge("flex gap-2 w-full h-screen m-0 p-2 text-white bg-black", figtree.className)}>
+      <body className={twMerge("flex gap-2 w-full h-screen text-white bg-black", figtree.className)}>
         <SupabaseProvider>
           <UserProvider>
             <AuthModal />
