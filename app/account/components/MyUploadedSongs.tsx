@@ -12,15 +12,12 @@ interface Props {
 const MyUploadedSongs = ({userSongs}: Props) => {
   const [deletedSongId, setDeletedSongId] = useState<number | null>(null);
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
-  const [isLoading, setIsLoading] = useState(false);
 
   return (
     <section className="mb-7 px-4">
       <DeleteSongModal
-        isLoading={isLoading}
         isOpen={isDeleteModalOpen}
         songId={deletedSongId}
-        setIsLoading={setIsLoading}
         setIsOpen={setIsDeleteModalOpen}
       />
 

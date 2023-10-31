@@ -1,6 +1,6 @@
 "use client"
 
-import { Dispatch, SetStateAction } from "react";
+import { Dispatch, SetStateAction, useState } from "react";
 import { useRouter } from "next/navigation";
 import { SupabaseClient, useSessionContext } from "@supabase/auth-helpers-react";
 import toast from "react-hot-toast";
@@ -10,14 +10,14 @@ import { Database } from "@/types/supabase";
 
 interface Props {
   isOpen: boolean;
-  isLoading: boolean;
   songId: number | null;
-  setIsLoading: Dispatch<SetStateAction<boolean>>
   setIsOpen: Dispatch<SetStateAction<boolean>>;
 }
 
-const DeleteSongModal = ({isOpen, songId, isLoading, setIsLoading, setIsOpen}: Props) => {
+const DeleteSongModal = ({isOpen, songId, setIsOpen}: Props) => {
   const router = useRouter();
+
+  const [isLoading, setIsLoading] = useState(false);
 
   const supabase = useSessionContext();
   const supabaseClient: SupabaseClient<Database> = supabase.supabaseClient;
