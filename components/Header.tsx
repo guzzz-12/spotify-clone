@@ -83,55 +83,56 @@ const Header = ({children, className}: Props) => {
           </Link>
         </div>
 
-        <div className="flex justify-between items-center gap-2">
-          {user &&
-            <>
-              <Tooltip id="account-tooltip" />
-              <Button
-                ref={btnRef}
-                className="font-base text-white bg-transparent disabled:cursor-not-allowed"
-                disabled={isLoadingUser}
-                onClickHandler={logoutHandler}
-              >
-                Sign out
-              </Button>
-              <Button
-                ref={btnRef}
-                className="flex justify-center items-center w-10 h-10 text-black bg-white rounded-full disabled:cursor-not-allowed"
-                data-tooltip-id="account-tooltip"
-                data-tooltip-content="Your Account"
-                disabled={isLoadingUser}
-                onClickHandler={push.bind(null, "/account")}
-              >
-                <AiOutlineUser className="w-5 h-5 flex-shrink-0" />
-              </Button>
-            </>
-          }
-
-          {!user &&
-            <>
-              <div className="flex justify-between items-center gap-2">
+        {!isLoadingUser &&
+          <div className="flex justify-between items-center gap-2">
+            {user &&
+              <>
+                <Tooltip id="account-tooltip" />
+                <Button
+                  ref={btnRef}
+                  className="flex justify-center items-center w-10 h-10 text-black bg-white rounded-full disabled:cursor-not-allowed"
+                  data-tooltip-id="account-tooltip"
+                  data-tooltip-content="Your Account"
+                  disabled={isLoadingUser}
+                  onClickHandler={push.bind(null, "/account")}
+                >
+                  <AiOutlineUser className="w-5 h-5 flex-shrink-0" />
+                </Button>
                 <Button
                   ref={btnRef}
                   className="font-base text-white bg-transparent disabled:cursor-not-allowed"
                   disabled={isLoadingUser}
-                  onClickHandler={() => onOpenChange(true)}
-                  >
-                  Sign up
-                </Button>
-                <Button
-                  className="font-base bg-white disabled:cursor-not-allowed"
-                  disabled={isLoadingUser}
-                  onClickHandler={() => onOpenChange(true)}
+                  onClickHandler={logoutHandler}
                 >
-                  Login
+                  Sign out
                 </Button>
-              </div>
-            </>
-          }
-        </div>
-      </div>
+              </>
+            }
 
+            {!user &&
+              <>
+                <div className="flex justify-between items-center gap-2">
+                  <Button
+                    ref={btnRef}
+                    className="font-base bg-white disabled:cursor-not-allowed"
+                    disabled={isLoadingUser}
+                    onClickHandler={() => onOpenChange(true)}
+                    >
+                    Sign up
+                  </Button>
+                  <Button
+                    className="font-base text-white bg-transparent disabled:cursor-not-allowed"
+                    disabled={isLoadingUser}
+                    onClickHandler={() => onOpenChange(true)}
+                  >
+                    Login
+                  </Button>
+                </div>
+              </>
+            }
+          </div>
+        }
+      </div>
       {children}
     </header>
   )

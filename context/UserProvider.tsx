@@ -24,7 +24,7 @@ export const UserContext = createContext<UserContextType>({
   user: null,
   userDetails: null,
   subscription: null,
-  isLoadingUser: false,
+  isLoadingUser: true,
   isLoadingSubscription: false,
   error: null,
   subscriptionError: null,

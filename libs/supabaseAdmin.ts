@@ -7,7 +7,12 @@ import { toDateTime } from "./helpers";
 
 export const supabaseAdmin = createClient<Database>(
   process.env.NEXT_PUBLIC_SUPABASE_URL!,
-  process.env.SUPABASE_SERVICE_ROLE_KEY!
+  process.env.SUPABASE_SERVICE_ROLE_KEY!,
+  {
+    auth: {
+      persistSession: false
+    }
+  }
 );
 
 /** Actualizar o insertar un product de Stripe en la base de datos */
