@@ -5,15 +5,15 @@ import Button from "@/components/Button";
 import useSubscriptionModal from "@/hooks/useSubscriptionModal";
 import { UserContext } from "@/context/UserProvider";
 
-const AccountContent = () => {
+const SubscriptionManager = () => {
   const {subscription, isLoadingSubscription} = useContext(UserContext);
 
   const subscriptionModal = useSubscriptionModal();
 
   return (
-    <section className="mb-7 px-6">
+    <section className="mx-4 mb-7 p-6 bg-neutral-700">
       {!isLoadingSubscription && !subscription && (
-        <div className="flex flex-col justify-center items-center mt-4">
+        <div className="flex flex-col justify-center items-center">
           <p className="mb-1 text-center text-xl">
             You currently don't have any active subscription
           </p>
@@ -30,7 +30,7 @@ const AccountContent = () => {
       )}
 
       {subscription &&
-        <div className="flex flex-col justify-center items-center mt-4">
+        <div className="flex flex-col justify-center items-center">
           <p className="mb-1 text-center text-xl">
             You are currently subscribed to {subscription.prices?.products?.name}
           </p>
@@ -49,4 +49,4 @@ const AccountContent = () => {
   )
 };
 
-export default AccountContent;
+export default SubscriptionManager;
