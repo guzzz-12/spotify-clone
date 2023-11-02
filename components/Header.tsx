@@ -29,7 +29,7 @@ const Header = ({children, className}: Props) => {
 
   const {user, isLoadingUser} = useContext(UserContext);
   const supabase = useSupabaseClient();
-  const {onOpenChange} = useAuthModal();
+  const {onOpenChange, setAuthType} = useAuthModal();
 
   const logoutHandler = async () => {
     const {error} = await supabase.auth.signOut();
@@ -116,14 +116,20 @@ const Header = ({children, className}: Props) => {
                     ref={btnRef}
                     className="font-base bg-white disabled:cursor-not-allowed"
                     disabled={isLoadingUser}
-                    onClickHandler={() => onOpenChange(true)}
+                    onClickHandler={() => {
+                      setAuthType("sign_up");
+                      onOpenChange(true);
+                    }}
                     >
                     Sign up
                   </Button>
                   <Button
                     className="font-base text-white bg-transparent disabled:cursor-not-allowed"
                     disabled={isLoadingUser}
-                    onClickHandler={() => onOpenChange(true)}
+                    onClickHandler={() => {
+                      setAuthType("sign_in");
+                      onOpenChange(true);
+                    }}
                   >
                     Login
                   </Button>

@@ -11,11 +11,12 @@ import { Database } from "@/types/supabase";
 
 const AuthModal = () => {
   const router = useRouter();
+
   const supabase = useSessionContext();
   const session = supabase.session;
   const supabaseClient: SupabaseClient<Database> = supabase.supabaseClient;
 
-  const {isOpen, onOpenChange} = useAuthModal();
+  const {isOpen, authType, onOpenChange} = useAuthModal();
 
   // Cerrar el modal al iniciar sesión
   useEffect(() => {
@@ -28,7 +29,7 @@ const AuthModal = () => {
   return (
     <GenericModal
       title="Welcome back"
-      description="Login to your account"
+      description="Sign in or create new account"
       isOpen={isOpen}
       onOpenChange={onOpenChange}
     >
@@ -36,6 +37,7 @@ const AuthModal = () => {
         supabaseClient={supabaseClient}
         theme="dark"
         magicLink
+        view={authType}
         providers={["github", "google"]}
         redirectTo={process.env.NEXT_PUBLIC_SITE_URL}
         queryParams={{
