@@ -11,14 +11,14 @@ const SubscriptionManager = () => {
   const subscriptionModal = useSubscriptionModal();
 
   return (
-    <section className="mx-4 mb-7 p-6 bg-neutral-700">
+    <section className="w-full max-w-[600px] mx-auto px-4 py-8 bg-slate-900 rounded-md">
       {!isLoadingSubscription && !subscription && (
         <div className="flex flex-col justify-center items-center">
           <p className="mb-1 text-center text-xl">
             You currently don't have any active subscription
           </p>
-          <p className="mb-6 text-center text-sm text-gray-200">
-            Subscribe to create and share your libraries
+          <p className="mb-6 text-center text-sm text-gray-400 font-semibold">
+            Subscribe to create and share your song libraries
           </p>
           <Button
             className="w-[300px]"
@@ -34,7 +34,7 @@ const SubscriptionManager = () => {
           <p className="mb-1 text-center text-xl">
             You are currently subscribed to {subscription.prices?.products?.name}
           </p>
-          <p className="mb-6 text-center text-sm text-gray-200">
+          <p className="mb-6 text-center text-sm text-gray-400 font-semibold">
             You can update or cancel your subscription anytime
           </p>
           <Button

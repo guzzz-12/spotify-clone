@@ -14,14 +14,12 @@ const MyUploadedSongs = ({userSongs}: Props) => {
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
 
   return (
-    <section className="mb-7 px-4">
+    <section className="mx-4 mb-7 p-4 border-t border-neutral-500 rounded-b-md bg-neutral-700">
       <DeleteSongModal
         isOpen={isDeleteModalOpen}
         songId={deletedSongId}
         setIsOpen={setIsDeleteModalOpen}
       />
-
-      <h2 className="text-xl">Your Uploaded Songs</h2>
 
       {userSongs.length === 0 &&
         <p className="mt-4 text-neutral-400">

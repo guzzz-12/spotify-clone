@@ -33,7 +33,7 @@ const MyUploadedSongItem = ({song, setDeleteModalOpen, setDeletedSongId}: Props)
 
   return (
     <div
-      className="relative flex flex-col justify-center items-center gap-4 p-3 rounded-md bg-neutral-400/5 group overflow-hidden cursor-pointer transition-colors hover:bg-neutral-400/10"
+      className="relative flex flex-col justify-center items-center gap-4 p-3 rounded-md bg-black group overflow-hidden cursor-pointer transition-colors hover:bg-neutral-400/10"
       onClick={() => setActiveId(song.id)}
       >
       <Tooltip id={`edit-song-${song.id}-tooltip`} className="z-50" />
