@@ -8,7 +8,7 @@ import { twMerge } from "tailwind-merge";
 interface Props {
   id: string;
   name: string;
-  type: "text" | "number";
+  type: "text" | "number" | "password";
   placeholder: string;
   disabled: boolean;
   Icon: ElementType;
