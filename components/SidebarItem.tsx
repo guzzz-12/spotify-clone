@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { twMerge } from "tailwind-merge";
-import { RouteItem } from "./Sidebar";
+import { RouteItem } from "./SidebarContent";
 
 interface Props {
   routeItem: RouteItem;
