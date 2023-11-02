@@ -8,7 +8,7 @@ import { AnimatePresence, motion } from "framer-motion";
 interface Props {
   isOpen: boolean;
   title: string;
-  description: string;
+  description: string | ReactNode;
   children: ReactNode;
   onOpenChange: (isOpen: boolean) => void;
 };
