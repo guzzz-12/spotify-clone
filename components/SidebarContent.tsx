@@ -16,6 +16,7 @@ import SidebarPlaylistBtn from "./SidebarPlaylistBtn";
 import SongLibrary from "./SongLibrary";
 import Button from "./Button";
 import usePlayer from "@/hooks/usePlayer";
+import useCurrentSession from "@/hooks/useCurrentSession";
 import { Database } from "@/types/supabase";
 import { Song } from "@/types";
 
@@ -40,6 +41,8 @@ const SidebarContent = () => {
   const [page, setPage] = useState(1);
   const [loading, setLoading] = useState(true);
   const [totalSongs, setTotalSongs] = useState(0);
+
+  const {setSession} = useCurrentSession();
 
   /**
    * Consultar y paginar las canciones
@@ -95,14 +98,17 @@ const SidebarContent = () => {
 
   useEffect(() => {
     supabaseClient.auth.onAuthStateChange((e, session) => {
-      // Cargar la primera página de canciones cuando el usuario inicia sesión
-      if (e === "INITIAL_SESSION") {
+      // cargar la primera página de canciones
+      // Almacenar la sesión en el state global
+      if (e === "SIGNED_IN" || e === "INITIAL_SESSION") {
+        setSession(session);
         getSongs(1, session);
-      };
+      }
 
       // Limpiar el state de las canciones cuando el usuario cierra sesión
       if (e === "SIGNED_OUT") {
-        setSongs([])
+        setSongs([]);
+        setSession(null);
       };
     });
   }, []);
