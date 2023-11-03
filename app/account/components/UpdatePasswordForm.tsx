@@ -95,12 +95,14 @@ const UpdatePasswordForm = ({supabase, router, needsReauthentication, loading, s
           <h2 className="mb-1 text-lg">
             Update your password
           </h2>
-          <div className="flex justify-start items-center gap-2 text-neutral-300">
-            <AiOutlineInfoCircle className="w-5 h-5" />
-            <p className="">
-              Check your inbox and copy the 6-digit confirmation code
-            </p>
-          </div>
+          {needsReauthentication &&
+            <div className="flex justify-start items-center gap-2 text-neutral-300">
+              <AiOutlineInfoCircle className="w-5 h-5" />
+              <p className="">
+                Check your inbox and copy the 6-digit confirmation code
+              </p>
+            </div>
+          }
         </div>
 
         <FormInput
