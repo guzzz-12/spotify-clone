@@ -7,8 +7,9 @@ import { BsMusicNoteBeamed } from "react-icons/bs";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@radix-ui/react-tabs";
 import MyUploadedSongs from "./MyUploadedSongs";
 import SubscriptionManager from "./SubscriptionManager";
-import { Song } from "@/types";
 import AccountSecurity from "./AccountSecurity";
+import UpdateUserNameForm from "./UpdateUserNameForm";
+import { Song } from "@/types";
 
 interface Props {
   songs: Song[];
@@ -60,10 +61,12 @@ const AccountsTabs = ({songs}: Props) => {
       </TabsList>
 
       <TabsContent
-        className="mx-4 mb-7 p-6 border-t border-neutral-500 rounded-b-md bg-neutral-700"
+        className="mx-4 mb-7 p-6 pb-9 border-t border-neutral-500 rounded-b-md bg-neutral-700"
         value="settings"
       >
         <SubscriptionManager />
+        <div className="w-full h-[1px] my-6 bg-neutral-600" />
+        <UpdateUserNameForm />
         <div className="w-full h-[1px] my-6 bg-neutral-600" />
         <AccountSecurity />
       </TabsContent>

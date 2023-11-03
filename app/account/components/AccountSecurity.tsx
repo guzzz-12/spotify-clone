@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { useSupabaseClient } from "@supabase/auth-helpers-react";
+import { useSession, useSupabaseClient } from "@supabase/auth-helpers-react";
 import toast from "react-hot-toast";
 import axios from "axios";
 import { Tooltip } from "react-tooltip";
@@ -11,19 +11,17 @@ import { MdArrowBack } from "react-icons/md";
 import Button from "@/components/Button";
 import UpdatePasswordForm from "./UpdatePasswordForm";
 import DeleteAccountModal from "./DeleteAccountModal";
-import useCurrentSession from "@/hooks/useCurrentSession";
 import { Database } from "@/types/supabase";
 
 const AccountSecurity = () => {
   const router = useRouter();
 
   const supabase = useSupabaseClient<Database>();
+  const session = useSession();
 
   const [showPasswordForm, setShowPasswordForm] = useState(false);
   const [openDeleteModal, setOpenDeleteModal] = useState(false);
   const [loading, setLoading] = useState(false);
-
-  const {session} = useCurrentSession();
 
   if (!session) {
     return null;
