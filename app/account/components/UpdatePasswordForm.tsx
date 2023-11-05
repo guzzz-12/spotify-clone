@@ -1,11 +1,12 @@
 "use client"
 
-import { Dispatch, SetStateAction } from "react";
+import { Dispatch, SetStateAction, useRef, useEffect } from "react";
 import { AppRouterInstance } from "next/dist/shared/lib/app-router-context";
 import { SupabaseClient } from "@supabase/supabase-js";
 import { FormProvider, useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
+import { AnimationDefinition, motion } from "framer-motion";
 import toast from "react-hot-toast";
 import { AiFillLock, AiOutlineInfoCircle } from "react-icons/ai";
 import FormInput from "@/components/FormInput";
@@ -51,9 +52,20 @@ interface Props {
 }
 
 const UpdatePasswordForm = ({supabase, router, needsReauthentication, loading, setLoading, setShowPasswordForm}: Props) => {
+  const formRef = useRef<HTMLFormElement | null>(null);
+
   const formProps = useForm<passwordFormSchemaType>({
     resolver: zodResolver(!needsReauthentication ? PasswordFormSchema : ExtendedFormType)
   });
+
+  /** Scrollear el formulario al finalizar la animación de aparición */
+  const onAnimationEndHandler = (_def: AnimationDefinition) => {
+    if (!formRef.current) {
+      return false;
+    }
+
+    formRef.current.scrollIntoView({behavior: "smooth"});
+  }
 
   /** Confirmar el cambio de contraseña */
   const onSubmitHandler = async (values: passwordFormSchemaType) => {
@@ -86,8 +98,13 @@ const UpdatePasswordForm = ({supabase, router, needsReauthentication, loading, s
 
   return (
     <FormProvider {...formProps}>
-      <form
-        className="flex flex-col justify-between gap-5 w-full max-w-[600px] mx-auto p-5 rounded-md bg-slate-900"
+      <motion.form
+        ref={formRef}
+        className="hidden flex-col justify-between gap-5 w-full max-w-[600px] mx-auto p-5 rounded-md bg-slate-900 overflow-hidden"
+        initial={{display: "none", height: 0, opacity: 0}}
+        animate={{display: "flex", height: "auto", opacity: 1}}
+        exit={{height: 0, opacity: 0}}
+        onAnimationComplete={onAnimationEndHandler}
         noValidate
         onSubmit={formProps.handleSubmit(onSubmitHandler)}
       >
@@ -145,14 +162,14 @@ const UpdatePasswordForm = ({supabase, router, needsReauthentication, loading, s
           </Button>
           <Button
             className="flex justify-between items-center font-normal text-white bg-transparent"
-            type="submit"
+            type="button"
             disabled={loading}
             onClickHandler={() => setShowPasswordForm(false)}
           >
             Cancel
           </Button>
         </div>
-      </form>
+      </motion.form>
     </FormProvider>
   )
 }

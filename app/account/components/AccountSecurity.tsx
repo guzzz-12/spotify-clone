@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { useSession, useSupabaseClient } from "@supabase/auth-helpers-react";
+import { AnimatePresence, motion } from "framer-motion";
 import toast from "react-hot-toast";
 import axios from "axios";
 import { Tooltip } from "react-tooltip";
@@ -98,16 +99,23 @@ const AccountSecurity = () => {
 
       <div className="flex justify-center items-center gap-2 w-full mb-4">
         <Tooltip id="back-btn" />
-        {showPasswordForm &&
-          <Button
-            className="flex justify-center items-center w-8 h-8 p-1 rounded-full"
-            data-tooltip-id="back-btn"
-            data-tooltip-content="Back to settings"
-            onClickHandler={() => setShowPasswordForm(false)}
-          >
-            <MdArrowBack className="w-6 h-6" />
-          </Button>
-        }
+        <AnimatePresence>
+          {showPasswordForm &&
+            <motion.div
+              initial={{scale: 0.1, opacity: 0}}
+              animate={{scale: 1, opacity: 1}}
+            >
+              <Button
+                className="flex justify-center items-center w-8 h-8 p-1 rounded-full"
+                data-tooltip-id="back-btn"
+                data-tooltip-content="Back to settings"
+                onClickHandler={() => setShowPasswordForm(false)}
+              >
+                <MdArrowBack className="w-6 h-6" />
+              </Button>
+            </motion.div>
+          }
+        </AnimatePresence>
         <BsFillShieldLockFill className="w-6 h-6 text-neutral-400" />
         <h2 className="text-xl">Account Security</h2>
       </div>
@@ -131,16 +139,18 @@ const AccountSecurity = () => {
         </div>
       }
 
-      {showPasswordForm && userProvider === "email" &&
-        <UpdatePasswordForm
-          supabase={supabase}
-          router={router}
-          needsReauthentication={needsReauthentication}
-          loading={loading}
-          setLoading={setLoading}
-          setShowPasswordForm={setShowPasswordForm}
-        />
-      }
+      <AnimatePresence>
+        {showPasswordForm && userProvider === "email" &&
+          <UpdatePasswordForm
+            supabase={supabase}
+            router={router}
+            needsReauthentication={needsReauthentication}
+            loading={loading}
+            setLoading={setLoading}
+            setShowPasswordForm={setShowPasswordForm}
+          />
+        }
+      </AnimatePresence>
     </section>
   )
 }
