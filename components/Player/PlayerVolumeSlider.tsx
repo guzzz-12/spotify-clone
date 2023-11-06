@@ -23,7 +23,7 @@ const PlayerVolumeSlider = ({initialVolume, updateInitialVolume, playerRef}: Pro
 
   return (
     <form
-      className="flex justify-end items-center gap-3 mr-9"
+      className="flex justify-center items-center gap-3 max-[550px]:w-full"
       onSubmit={(e) => e.preventDefault()}
     >
       <button

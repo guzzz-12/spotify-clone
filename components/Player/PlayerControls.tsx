@@ -93,7 +93,7 @@ const PlayerControls = (props: Props) => {
   };
 
   return (
-    <div className="flex justify-center items-center gap-6">
+    <div className="flex justify-center items-center gap-3 shrink-0 max-[550px]:w-full">
       <Tooltip id="play-next" />
       <Tooltip id="play-prev" />
 
