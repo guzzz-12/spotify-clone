@@ -40,11 +40,12 @@ const PlaylistModal = () => {
 
       setLoading(true);
       
+      // La data viene ordenada por ID en orden ascendente
+      // sin importar el orden del array de IDs proporcionado
       const {data} = await supabaseClient
       .from("songs")
       .select("*")
-      .in("id", ids)
-      .order("created_at", {ascending: false});
+      .in("id", ids);
 
       if (!data) {
         return null;
@@ -52,7 +53,7 @@ const PlaylistModal = () => {
 
       const songsWithImage: Song[] = [];
 
-      // Buscar el public url de la imagen de la canción en el bucket
+      // Buscar el public url de la imagen de cada canción en el bucket
       for(let item of data) {
         const itemWithImageUrl = {...item};
         const {data: {publicUrl}} = supabaseClient.storage.from("images").getPublicUrl(item.image_url);
@@ -60,6 +61,14 @@ const PlaylistModal = () => {
 
         songsWithImage.push(itemWithImageUrl);
       };
+
+      // Ordenar las canciones en el modal en el mismo orden del state del playlist
+      songsWithImage.sort((a, b) => {
+        const indexA = playList.indexOf(a.id);
+        const indexB = playList.indexOf(b.id);
+      
+        return indexA - indexB;
+      });
 
       setSongs(songsWithImage);
 
