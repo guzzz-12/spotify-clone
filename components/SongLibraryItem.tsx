@@ -3,13 +3,11 @@
 import Image from "next/image";
 import { useUser } from "@supabase/auth-helpers-react";
 import { twMerge } from "tailwind-merge";
-import { Tooltip } from "react-tooltip";
-import { MdOutlinePlaylistAdd } from "react-icons/md";
-import { FaTimes } from "react-icons/fa";
+import AddToPlaylistBtn from "./AddToPlaylistBtn";
 import useLoadImage from "@/hooks/useLoadImage";
 import usePlayer from "@/hooks/usePlayer";
-import { Song } from "@/types";
 import useAuthModal from "@/hooks/useAuthModal";
+import { Song } from "@/types";
 
 interface Props {
   song: Song;
@@ -21,7 +19,7 @@ const SongLibraryItem = ({song, borderLess}: Props) => {
 
   const user = useUser();
   const authModal = useAuthModal();
-  const {setActiveId, playList, setPlayList, addToPlayList, removeFromPlayList} = usePlayer();
+  const {setActiveId, playList, setPlayList} = usePlayer();
 
   // Iniciar la reproducción
   const onClickHandler = () => {
@@ -42,8 +40,6 @@ const SongLibraryItem = ({song, borderLess}: Props) => {
       className={twMerge("flex items-center gap-0 w-full p-2 cursor-pointer rounded-md  hover:bg-neutral-800/50 overflow-hidden", borderLess ? "border-none" : "border border-neutral-800")}
       onClick={onClickHandler}
     >
-      <Tooltip id="playlist-btn" className="z-50" />
-
       <div className="relative w-12 h-12 mr-2 flex-shrink-0 rounded-md overflow-hidden">
         <Image
           className="object-cover"
@@ -58,22 +54,12 @@ const SongLibraryItem = ({song, borderLess}: Props) => {
         <p className="w-full text-sm text-neutral-400 truncate">{song.author}</p>
       </div>
 
-      <button
-        className="flex justify-center items-center w-7 h-7 p-[3px] flex-shrink-0 rounded-full hover:bg-slate-600/60 transition-colors"
-        data-tooltip-id="playlist-btn"
-        data-tooltip-content={isAddedToPlayList ? "Remove from playlist" : "Add to playlist"}
-        onClick={(e) => {
-          e.stopPropagation();
-          if (!isAddedToPlayList) {
-            addToPlayList(song.id);
-          } else {
-            removeFromPlayList(song.id);
-          }
-        }}
-      >
-        {isAddedToPlayList && <FaTimes className="w-4 h-4 text-neutral-400" />}
-        {!isAddedToPlayList && <MdOutlinePlaylistAdd className="w-6 h-6 text-neutral-400" />}
-      </button>
+      <AddToPlaylistBtn
+        className="p-2 text-neutral-300"
+        song={song}
+        path="sidebar"
+        isAddedToPlayList={isAddedToPlayList}
+      />
     </button>
   )
 };

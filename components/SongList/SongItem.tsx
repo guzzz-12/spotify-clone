@@ -3,10 +3,11 @@
 import Image from "next/image";
 import { useUser } from "@supabase/auth-helpers-react";
 import PlayBtn from "./PlayBtn";
+import AddToPlaylistBtn from "../AddToPlaylistBtn";
 import useLoadImage from "@/hooks/useLoadImage";
 import usePlayer from "@/hooks/usePlayer";
-import { Song } from "@/types";
 import useAuthModal from "@/hooks/useAuthModal";
+import { Song } from "@/types";
 
 interface Props {
   song: Song;
@@ -19,7 +20,8 @@ const SongItem = (props: Props) => {
   const authModal = useAuthModal();
 
   const imageUrl = useLoadImage(song);
-  const {setActiveId, setPlayList} = usePlayer();
+  const {playList, setActiveId, setPlayList} = usePlayer();
+  const isAddedToPlayList = playList.includes(song.id);
 
   const onClickPlayHandler = (songId: number) => {
     // Pedir autenticación si no está logueado
@@ -46,8 +48,15 @@ const SongItem = (props: Props) => {
           src={imageUrl || "/images/song-default-image.webp"}
           alt={`${song.title} image`}
         />
-        <div className="absolute top-[50%] left-[50%] -translate-x-[50%] -translate-y-[50%] z-20">
+        <div className="absolute top-[50%] left-[50%] flex justify-center items-center gap-2 -translate-x-[50%] -translate-y-[50%] z-20">
           <PlayBtn />
+          <AddToPlaylistBtn
+            className="p-4 rounded-full drop-shadow-md opacity-0 text-black bg-green-500 transition-all hover:scale-110 group-hover:opacity-100"
+            song={song}
+            iconSize="sm"
+            path="homepage"
+            isAddedToPlayList={isAddedToPlayList}
+          />
         </div>
       </div>
 

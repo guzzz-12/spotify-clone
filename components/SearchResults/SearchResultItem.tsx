@@ -1,10 +1,12 @@
 "use client"
 
-import useLoadImage from "@/hooks/useLoadImage";
 import Image from "next/image";
-
-import { Song } from "@/types";
+import { Tooltip } from "react-tooltip";
 import LikeBtn from "../LikeBtn";
+import AddToPlaylistBtn from "../AddToPlaylistBtn";
+import useLoadImage from "@/hooks/useLoadImage";
+import usePlayer from "@/hooks/usePlayer";
+import { Song } from "@/types";
 
 interface Props {
   song: Song;
@@ -13,8 +15,15 @@ interface Props {
 const SearchResultItem = ({song}: Props) => {
   const imageUrl = useLoadImage(song);
 
+  const {playList, setActiveId} = usePlayer();
+  const isAddedToPlayList = playList.includes(song.id);
+
   return (
-    <div className="flex justify-between items-center gap-3 w-full p-2 rounded-md bg-neutral-800/50 cursor-pointer hover:bg-neutral-800">
+    <div
+      className="flex justify-between items-center gap-3 w-full p-2 rounded-md bg-neutral-800/50 cursor-pointer hover:bg-neutral-800"
+      onClick={() => setActiveId(song.id)}
+    >
+      <Tooltip id="playlist-btn" className="z-50" />
       <div className="flex items-center gap-3 w-full">
         <div className="relative w-12 h-12 flex-shrink-0 rounded-md overflow-hidden">
           <Image
@@ -29,7 +38,15 @@ const SearchResultItem = ({song}: Props) => {
           <p className="w-full text-sm text-neutral-400 truncate">{song.author}</p>
         </div>
       </div>
-      <LikeBtn songId={song.id} />
+      <div className="flex justify-center items-center gap-2">
+        <LikeBtn songId={song.id} />
+        <AddToPlaylistBtn
+          song={song}
+          iconSize="md"
+          path="search"
+          isAddedToPlayList={isAddedToPlayList}
+        />
+      </div>
     </div>
   )
 };
