@@ -1,6 +1,6 @@
 "use client"
 
-import { useState } from "react";
+import { useContext, useState } from "react";
 import { useRouter } from "next/navigation";
 import { useSession, useSupabaseClient } from "@supabase/auth-helpers-react";
 import { AnimatePresence, motion } from "framer-motion";
@@ -12,6 +12,7 @@ import { MdArrowBack } from "react-icons/md";
 import Button from "@/components/Button";
 import UpdatePasswordForm from "./UpdatePasswordForm";
 import DeleteAccountModal from "./DeleteAccountModal";
+import { UserContext } from "@/context/UserProvider";
 import { Database } from "@/types/supabase";
 
 const AccountSecurity = () => {
@@ -19,6 +20,8 @@ const AccountSecurity = () => {
 
   const supabase = useSupabaseClient<Database>();
   const session = useSession();
+
+  const {clearUserData} = useContext(UserContext);
 
   const [showPasswordForm, setShowPasswordForm] = useState(false);
   const [openDeleteModal, setOpenDeleteModal] = useState(false);
@@ -76,6 +79,8 @@ const AccountSecurity = () => {
       });
 
       await supabase.auth.signOut();
+
+      clearUserData();
 
       router.replace("/");
 

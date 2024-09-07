@@ -12,6 +12,7 @@ type UserContextType = {
   user: User | null;
   userDetails: UserDetails | null;
   subscription: SubscriptionWithPricesAndProducts | null;
+  clearUserData: () => void;
   isLoadingUser: boolean;
   isLoadingSubscription: boolean;
   error: string | null;
@@ -26,6 +27,7 @@ export const UserContext = createContext<UserContextType>({
   subscription: null,
   isLoadingUser: true,
   isLoadingSubscription: false,
+  clearUserData: () => {},
   error: null,
   subscriptionError: null,
   updateSubscriptionState: () => {}
@@ -34,16 +36,24 @@ export const UserContext = createContext<UserContextType>({
 const UserProvider = ({children}: {children: ReactNode}) => {
   const supabase = useSessionContext();
   const supabaseClient: SupabaseClient<Database> = supabase.supabaseClient
-  const user = useUser();
+  const userData = useUser();
 
   const accessToken = supabase.session?.access_token ?? null;
 
+  const [user, setUser] = useState<User | null>(null);
   const [userDetails, setUserDetails] = useState<UserDetails | null>(null);
   const [subscription, setSubscription] = useState<SubscriptionWithPricesAndProducts | null>(null);
   const [isLoadingUser, setIsLoadingUser] = useState(false);
   const [isLoadingSubscription, setIsLoadingSubscription] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [subscriptionError, setSubscriptionError] = useState<PostgrestError | null>(null);
+  
+  // Inicializar el state de la data del usuario
+  useEffect(() => {
+    if (userData) {
+      setUser(userData);
+    }
+  }, [userData]);
 
   /** Consultar los detalles del usuario */
   const getUserDetails = async () => {
@@ -125,6 +135,13 @@ const UserProvider = ({children}: {children: ReactNode}) => {
   };
 
 
+  /** Eliminar la data del usuario del state global */
+  const clearUserData = () => {
+    setUser(null);
+    setUserDetails(null);
+  }
+
+
   useEffect(() => {
     getUserDetails();
     getUserSubscription();
@@ -138,6 +155,7 @@ const UserProvider = ({children}: {children: ReactNode}) => {
         user,
         userDetails,
         subscription,
+        clearUserData,
         isLoadingUser,
         isLoadingSubscription,
         error,

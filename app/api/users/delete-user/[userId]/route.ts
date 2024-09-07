@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
+import { revalidatePath } from "next/cache";
 import { supabaseAdmin } from "@/libs/supabaseAdmin";
 
 interface Context {
@@ -48,6 +49,8 @@ export async function DELETE(req: NextRequest, {params}: Context) {
 
     // Eliminar la cuenta del usuario luego de eliminar toda su data y archivos
     await supabaseAdmin.auth.admin.deleteUser(userId);
+
+    revalidatePath("/account");
 
     return new NextResponse("User deleted successfully");
     
