@@ -62,7 +62,10 @@ const PlayerContent = (props: Props) => {
       <motion.div
         key="player-controls"
         className="flex justify-between items-center gap-2 max-[550px]:gap-4 flex-wrap w-full h-full"
-        animate={{height: isMinimized ? 0 : "auto"}}
+        animate={{
+          height: isMinimized ? 0 : "auto",
+          opacity: isMinimized ? 0 : 1
+        }}
       >
         {song &&
           <div className="flex justify-center items-center gap-2 min-[650px]:hidden w-full shrink-0 text-center overflow-hidden">
