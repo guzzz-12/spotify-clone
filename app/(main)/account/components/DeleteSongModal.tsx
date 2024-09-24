@@ -2,10 +2,10 @@
 
 import { Dispatch, SetStateAction, useState } from "react";
 import { useRouter } from "next/navigation";
+import axios from "axios";
 import toast from "react-hot-toast";
 import GenericModal from "@/components/GenericModal";
 import Button from "@/components/Button";
-import { supabaseBrowserClient } from "@/utils/supabaseBrowserClient";
 
 interface Props {
   isOpen: boolean;
@@ -17,40 +17,22 @@ const DeleteSongModal = ({isOpen, songId, setIsOpen}: Props) => {
   const router = useRouter();
 
   const [isLoading, setIsLoading] = useState(false);
-  
-  const supabase = supabaseBrowserClient;
 
   /** Eliminar la canción de la base de datos */
   const deleteSongHandler = async () => {
     try {
       setIsLoading(true);
-
-      // Buscar el path de la imagen de la canción
-      const {data: songData} = await supabase
-      .from("songs")
-      .select("song_path, image_url")
-      .eq("id", `${songId}`)
-      .limit(1);
-
-      if (!songData) {
-        throw new Error("Song not found")
-      }
-
-      // Eliminar la canción y su imagen del bucket
-      await supabase
-      .storage
-      .from("images")
-      .remove([songData[0].song_path, songData[0].image_url]);
       
-      // Eliminar la canción de la base de datos
-      await supabase
-      .from("songs")
-      .delete()
-      .eq("id", `${songId}`);
+      await axios({
+        method: "GET",
+        url: `/api/songs/delete-song?song_id=${songId}`
+      });
 
       // Cerrar el modal y refrescar la página
       setIsOpen(false);
       router.refresh();
+
+      toast.success("Song deleted successfully");
 
     } catch (error) {
       toast.error("Error deleting song. Refresh the page and try again")
