@@ -57,13 +57,17 @@ const AuthPage = () => {
 
   // Iniciar sesión o regstrarse con google o github
   const onSocialSubmitHandler = async (provider: "google" | "github") => {
+    const callbackUrl = `${process.env.NEXT_PUBLIC_PROJECT_URL!}/api/auth/callback`;
+
+    console.log({OAUTH_CALLBACK_URL: callbackUrl});
+
     try {
       setLoading(true);
 
       await supabase.auth.signInWithOAuth({
         provider,
         options: {
-          redirectTo: `${process.env.NEXT_PUBLIC_PROJECT_URL!}/api/auth/callback`,
+          redirectTo: callbackUrl,
           queryParams: {
             access_type: "offline",
             prompt: "consent",
