@@ -59,8 +59,6 @@ const AuthPage = () => {
   const onSocialSubmitHandler = async (provider: "google" | "github") => {
     const callbackUrl = `${process.env.NEXT_PUBLIC_PROJECT_URL!}/api/auth/callback`;
 
-    console.log({OAUTH_CALLBACK_URL: callbackUrl});
-
     try {
       setLoading(true);
 
@@ -123,7 +121,7 @@ const AuthPage = () => {
       }
 
       {!isLoadingUser &&
-        <section className="w-full max-w-[450px] text-white">
+        <section className="w-full max-w-[500px] p-10 text-white border border-neutral-600 rounded-md bg-neutral-700">
           <Link href="/">
             <div className="flex justify-center items-center gap-3 mb-3">
               <FaSpotify className="text-green-600" size={45} />
@@ -189,14 +187,14 @@ const AuthPage = () => {
                   <FormItem>
                     <FormControl>
                       <Input
-                        className={cn("py-5", formProps.formState.errors.email ? "border-destructive" : "border")}
+                        className={cn("py-5", formProps.formState.errors.email ? "border-red-500 bg-red-100" : "border bg-neutral-50")}
                         placeholder="john.doe@mail.com"
                         disabled={loading}
                         {...field}
                       />
                     </FormControl>
 
-                    <FormMessage className="text-left translate-y-[-5px]" />
+                    <FormMessage className="text-left text-red-500 translate-y-[-5px]" />
                   </FormItem>
                 )}
               />
