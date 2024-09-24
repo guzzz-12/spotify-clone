@@ -1,6 +1,5 @@
 "use client"
 
-import Image from "next/image";
 import { useSortable } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
 import { AnimatePresence, motion } from "framer-motion";
@@ -29,10 +28,8 @@ const PlayListModalItem = ({song, activeSongId, setActiveSongId}: Props) => {
       style={styles}
       onClick={() => setActiveSongId(song.id)}
     >
-      <Image
-        className="block mr-2 flex-shrink-0 rounded-sm"
-        width={40}
-        height={40}
+      <img
+        className="block w-[40px] h-[40px] mr-2 flex-shrink-0 rounded-sm"
         src={song.image_url || "/images/song-default-image.webp"}
         alt={`${song.title} image`}
       />

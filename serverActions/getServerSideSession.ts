@@ -1,12 +1,8 @@
-import { cookies } from "next/headers";
-import { createServerComponentClient } from "@supabase/auth-helpers-nextjs";
-import { Database } from "@/types/supabase";
+import { supabaseServerClient } from "@/utils/supabaseServerClient";
 
 /** Consultar del lado del servidor si el usuario posee una sesión activa */
 const getServerSideSession = async () => {
-  const supabase = createServerComponentClient<Database>({
-    cookies
-  });
+  const supabase = await supabaseServerClient();
   
   // Consultar la sesión del usuario
   const {data: sessionData, error: sessionError} = await supabase.auth.getSession();

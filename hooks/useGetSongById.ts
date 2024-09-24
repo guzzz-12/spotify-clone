@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
-import { useSupabaseClient, useUser } from "@supabase/auth-helpers-react";
 import { toast } from "react-hot-toast";
-import { Database } from "@/types/supabase";
+import useCurrentSession from "./useCurrentSession";
+import { supabaseBrowserClient } from "@/utils/supabaseBrowserClient";
 import { Song } from "@/types";
 
 /**
@@ -12,13 +12,13 @@ const useGetSongById = (songId: number | null) => {
   const [songUrl, setSongUrl] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(false);
 
-  const user = useUser();
+  const supabase = supabaseBrowserClient;
 
-  const supabase = useSupabaseClient<Database>();
+  const session = useCurrentSession(state => state.session);
 
   useEffect(() => {
     const fetchSong = async (songId: number | null) => {
-      if (!user || !songId) {
+      if (!session || !songId) {
         return null;
       };
 
@@ -56,7 +56,7 @@ const useGetSongById = (songId: number | null) => {
 
     fetchSong(songId);
 
-  }, [songId, user]);
+  }, [songId, session]);
 
   return {songData, songUrl, isLoading}
 };

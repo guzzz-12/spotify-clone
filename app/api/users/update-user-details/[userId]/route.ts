@@ -1,5 +1,5 @@
+import { supabaseServerClient } from "@/utils/supabaseServerClient";
 import { NextRequest, NextResponse } from "next/server";
-import { supabaseAdmin } from "@/libs/supabaseAdmin";
 
 interface Context {
   params: {
@@ -27,7 +27,9 @@ export async function PATCH(req: NextRequest, {params}: Context) {
 
     console.log({firstName, lastName});
 
-    await supabaseAdmin.auth.admin.updateUserById(userId, {
+    const supabase = await supabaseServerClient();
+
+    await supabase.auth.admin.updateUserById(userId, {
       user_metadata: {
         name: firstName,
         last_name: lastName,

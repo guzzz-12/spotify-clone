@@ -1,12 +1,11 @@
 "use client"
 
-import Image from "next/image";
-import { useUser } from "@supabase/auth-helpers-react";
+import { useRouter } from "next/navigation";
 import { twMerge } from "tailwind-merge";
 import AddToPlaylistBtn from "./AddToPlaylistBtn";
 import useLoadImage from "@/hooks/useLoadImage";
 import usePlayer from "@/hooks/usePlayer";
-import useAuthModal from "@/hooks/useAuthModal";
+import useCurrentSession from "@/hooks/useCurrentSession";
 import { Song } from "@/types";
 
 interface Props {
@@ -15,18 +14,18 @@ interface Props {
 };
 
 const SongLibraryItem = ({song, borderLess}: Props) => {
+  const router = useRouter();
+
   const imageUrl = useLoadImage(song);
 
-  const user = useUser();
-  const authModal = useAuthModal();
+  const session = useCurrentSession(state => state.session);
   const {setActiveId, playList, setPlayList} = usePlayer();
 
   // Iniciar la reproducción
   const onClickHandler = () => {
     // Pedir autenticación si no está logueado
-    if (!user) {
-      authModal.onOpenChange(true);
-      return null;
+    if (!session) {
+      return router.replace("/signin");
     };
 
     setPlayList([]);
@@ -41,9 +40,8 @@ const SongLibraryItem = ({song, borderLess}: Props) => {
       onClick={onClickHandler}
     >
       <div className="relative w-12 h-12 mr-2 flex-shrink-0 rounded-md overflow-hidden">
-        <Image
-          className="object-cover"
-          fill
+        <img
+          className="block w-full h-auto object-cover"
           src={imageUrl || "/images/song-default-image.webp"}
           alt={`${song.title} image`}
         />

@@ -2,24 +2,21 @@
 
 import { useContext, useEffect, useState, MouseEvent } from "react";
 import { useRouter } from "next/navigation";
-import { User, useSupabaseClient } from "@supabase/auth-helpers-react";
+import { type User } from "@supabase/supabase-js";
 import { AnimatePresence, motion } from "framer-motion";
 import { AiOutlineHeart, AiFillHeart } from "react-icons/ai";
 
-import useAuthModal from "@/hooks/useAuthModal";
 import { UserContext } from "@/context/UserProvider";
-import { Database } from "@/types/supabase";
+import { supabaseBrowserClient } from "@/utils/supabaseBrowserClient";
 
 interface Props {
   songId: number;
 };
 
 const LikeBtn = ({songId}: Props) => {
-  const {refresh} = useRouter();
+  const {refresh, replace} = useRouter();
   const {user} = useContext(UserContext);
-  const supabase = useSupabaseClient<Database>();
-  
-  const authModal = useAuthModal();
+  const supabase = supabaseBrowserClient;
 
   const [isLiked, setIsLiked] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
@@ -59,7 +56,7 @@ const LikeBtn = ({songId}: Props) => {
     e.stopPropagation();
 
     if (!user) {
-      return authModal.onOpenChange(true)
+      return replace("/signin");
     };
 
     try {

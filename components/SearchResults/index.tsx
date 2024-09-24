@@ -1,5 +1,5 @@
 import SearchResultItem from "./SearchResultItem";
-import { FilterBy } from "@/app/search/page";
+import { FilterBy } from "@/app/(main)/search/page";
 import getSongsByTitle from "@/serverActions/searchSongs";
 
 interface Props {

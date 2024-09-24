@@ -1,15 +1,14 @@
 import { NextResponse } from "next/server";
-import { cookies } from "next/headers";
-import { createRouteHandlerClient } from "@supabase/auth-helpers-nextjs";
 import { stripe } from "@/libs/stripe";
 import { getOrCreateCustomer } from "@/libs/supabaseAdmin";
+import { supabaseServerClient } from "@/utils/supabaseServerClient";
 
 /**
  * Generar la URL de la sesión de checkout de Stripe
  */
 export async function POST() {
   try {
-    const supabase = createRouteHandlerClient({cookies});
+    const supabase = await supabaseServerClient();
 
     const {data: {user}} = await supabase.auth.getUser();
 
@@ -29,7 +28,7 @@ export async function POST() {
 
     const {url} = await stripe.billingPortal.sessions.create({
       customer: customer.stripe_customer_id,
-      return_url: `${process.env.NEXT_PUBLIC_SITE_URL}/account`
+      return_url: `${process.env.NEXT_PUBLIC_PROJECT_URL}/account`
     });
 
     return NextResponse.json({data: {sessionUrl: url}});

@@ -1,34 +1,31 @@
 "use client"
 
 import Link from "next/link";
-import Image from "next/image";
-import { useSessionContext } from "@supabase/auth-helpers-react";
+import { useRouter } from "next/navigation";
 import { Tooltip } from "react-tooltip";
-import useAuthModal from "@/hooks/useAuthModal";
+import useCurrentSession from "@/hooks/useCurrentSession";
 
 const LikedSongsLink = () => {
-  const supabase = useSessionContext();
-  const session = supabase.session;
-  const {onOpenChange} = useAuthModal()
+  const {replace} = useRouter();
+
+  const session = useCurrentSession(state => state.session);
 
   return (
     <Link
-      className="relative flex items-center gap-4 w-full pr-4 rounded-md bg-neutral-100/10 transition-all group hover:bg-neutral-100/20"
+      className="relative flex items-center gap-4 w-full pr-4 rounded-md bg-neutral-100/10 transition-all group hover:bg-neutral-100/20 overflow-hidden"
       href="/liked-songs"
       onClick={(e) => {
         if (!session) {
           e.preventDefault();
-          onOpenChange(true);
-          return false;
+          replace("/signin");
         }
       }}
     >
       <Tooltip id="play-liked-songs" />
-      <div className="relative min-w-[64px] min-h-[64px]">
-        <Image
-          className="object-cover"
+      <div className="relative w-[64px] h-[64px]">
+        <img
+          className="w-full h-auto object-center object-cover"
           src="/images/like.webp"
-          fill
           alt="like icon"
         />
       </div>

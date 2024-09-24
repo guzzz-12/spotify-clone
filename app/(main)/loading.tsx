@@ -1,5 +1,3 @@
-"use client";
-
 import { BeatLoader } from "react-spinners";
 import Box from "@/components/Box";
 

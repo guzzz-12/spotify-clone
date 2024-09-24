@@ -1,14 +1,10 @@
-import { cookies } from "next/headers";
-import { createServerComponentClient } from "@supabase/auth-helpers-nextjs";
+import { FilterBy } from "@/app/(main)/search/page";
+import { supabaseServerClient } from "@/utils/supabaseServerClient";
 import { Song } from "@/types";
-import { Database } from "@/types/supabase";
-import { FilterBy } from "@/app/search/page";
 
 /** Server action para consultar canciones por título */
 const searchSongs = async (term: string, filterBy: FilterBy): Promise<Song[]> => {
-  const supabase = createServerComponentClient<Database>({
-    cookies
-  });
+  const supabase = await supabaseServerClient();
 
   try {
     const {data, error} = await supabase

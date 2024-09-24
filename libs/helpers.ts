@@ -1,5 +1,5 @@
 export const getUrl = () => {
-  let urlStr = process.env.NEXT_PUBLIC_SITE_URL ??
+  let urlStr = process.env.NEXT_PUBLIC_PROJECT_URL ??
   process.env.NEXT_PUBLIC_VERCEL_URL ??
   "http://localhost:3000";
 

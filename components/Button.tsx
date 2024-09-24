@@ -1,8 +1,9 @@
-import { ReactNode, forwardRef, ButtonHTMLAttributes } from "react";
+import { ReactNode, forwardRef, ButtonHTMLAttributes, HTMLAttributes } from "react";
 import { twMerge } from "tailwind-merge";
 
 interface Props extends ButtonHTMLAttributes<HTMLButtonElement> {
   children: ReactNode;
+  // className?: HTMLAttributes<HTMLButtonElement>["className"];
   onClickHandler: () => void;
 };
 

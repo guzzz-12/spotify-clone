@@ -1,6 +1,7 @@
 "use client"
 
 import { useContext } from "react";
+import { useRouter } from "next/navigation";
 import { TbPlaylist } from "react-icons/tb";
 import { AiOutlinePlus } from "react-icons/ai";
 import { Tooltip } from "react-tooltip";
@@ -8,7 +9,6 @@ import { toast } from "react-hot-toast";
 import SongLibraryItem from "./SongLibraryItem";
 import SongLibraryItemSkeleton from "./SongLibraryItemSkeleton";
 import { UserContext } from "@/context/UserProvider";
-import useAuthModal from "@/hooks/useAuthModal";
 import useSubscriptionModal from "@/hooks/useSubscriptionModal";
 import useUploadModal from "@/hooks/useUploadModal";
 import { Song } from "@/types";
@@ -19,16 +19,16 @@ interface Props {
 };
 
 const SongLibrary = ({userSongs, loading}: Props) => {
+  const {replace} = useRouter();
   const {user, subscription, subscriptionError} = useContext(UserContext);
-
-  const authModalState = useAuthModal();
+  
   const subscriptionModal = useSubscriptionModal();
   const uploadModalState = useUploadModal();
 
   const onClickHandler = async () => {
     // Chequear si el usuario está autenticado
     if (!user) {
-      return authModalState.onOpenChange(true)
+      return replace("/signin")
     };
 
     // Chequear si el usuario está suscrito

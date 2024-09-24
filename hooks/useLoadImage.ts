@@ -1,10 +1,9 @@
-import { useSupabaseClient } from "@supabase/auth-helpers-react";
 import { Song } from "@/types";
-import { Database } from "@/types/supabase";
+import { supabaseBrowserClient } from "@/utils/supabaseBrowserClient";
 
 /** Consultar la URL de la imagen de la canción especificada */
 const useLoadImage = (song: Song) => {
-  const supabase = useSupabaseClient<Database>();
+  const supabase = supabaseBrowserClient;
 
   if (!song) {
     return null;

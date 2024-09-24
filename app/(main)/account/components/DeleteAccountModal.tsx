@@ -4,6 +4,7 @@ import React, { Dispatch, SetStateAction } from "react";
 import { AiOutlineWarning } from "react-icons/ai";
 import GenericModal from "@/components/GenericModal";
 import Button from "@/components/Button";
+import Typography from "@/components/Typography";
 
 interface Props {
   isOpen: boolean;
@@ -15,11 +16,17 @@ interface Props {
 const DeleteAccountModal = ({isOpen, isLoading, confirmHandler, setIsOpen}: Props) => {
   return (
     <GenericModal
-      title="Delete account permanently?"
+      title={
+        <Typography
+          className="text-xl text-white font-semibold"
+          text="Delete account permanently?"
+          variant="span"
+        />
+      }
       description={
         <>
-          <div className="flex justify-center items-center gap-2 w-full text-center">
-            <AiOutlineWarning className="w-5 h-5 text-orange-600" />
+          <div className="flex justify-center items-center gap-1 w-full text-center">
+            <AiOutlineWarning className="text-orange-600" size={24} />
             <p className="text-white">
               This action cannot be undone
             </p>
@@ -37,7 +44,7 @@ const DeleteAccountModal = ({isOpen, isLoading, confirmHandler, setIsOpen}: Prop
     >
       <div className="flex justify-center items-center gap-2">
         <Button
-          className=""
+          className="text-white bg-red-700"
           disabled={isLoading}
           onClickHandler={confirmHandler}
         >

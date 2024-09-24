@@ -1,17 +1,10 @@
+import { ReactNode } from "react";
 import { Metadata } from "next";
 import { Figtree } from "next/font/google";
-import { twMerge } from "tailwind-merge";
-import Sidebar from "@/components/Sidebar";
-import SupabaseProvider from "@/context/SupabaseProvider";
-import UserProvider from "@/context/UserProvider";
-import AuthModal from "@/components/AuthModal";
-import UploadSongModal from "@/components/UploadSongModal";
-import SubscriptionModal from "@/components/SubscriptionModal";
-import Player from "@/components/Player";
+import GetUserSession from "@/components/GetUserSession";
 import ToastWrapper from "@/components/ToastWrapper";
-import PlaylistModal from "@/components/PlaylistModal";
-import getProductsWithPrices from "@/serverActions/getProductsWithPrices";
-import "react-tooltip/dist/react-tooltip.css";
+import UserProvider from "@/context/UserProvider";
+import { cn } from "@/lib/utils";
 import "./globals.css";
 
 const figtree = Figtree({subsets: ["latin"]});
@@ -24,32 +17,21 @@ export const metadata: Metadata = {
 export const revalidate = 0;
 
 interface Props {
-  children: React.ReactNode
-};
+  children: ReactNode;
+}
 
-const RootLayout = async ({children}: Props) => {
-  const productsWithPrices = await getProductsWithPrices();
-
+const MainLayout = ({children}: Props) => {
   return (
     <html lang="en">
-      <body className={twMerge("flex gap-2 w-full h-screen text-white bg-black", figtree.className)}>
-        <SupabaseProvider>
-          <UserProvider>
-            <AuthModal />
-            <UploadSongModal />
-            <SubscriptionModal products={productsWithPrices} />
-            <PlaylistModal />
-            <Sidebar/>
-            <main className="w-full h-full">
-              {children}
-            </main>
-            <Player />
-            <ToastWrapper />
-          </UserProvider>
-        </SupabaseProvider>
+      <body className={cn("relative w-full h-screen min-h-screen", figtree.className)}>
+        <UserProvider>
+          <GetUserSession />
+          {children}
+        </UserProvider>
+        <ToastWrapper />
       </body>
     </html>
   )
-};
+}
 
-export default RootLayout;
+export default MainLayout

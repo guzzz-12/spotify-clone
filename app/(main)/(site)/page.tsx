@@ -5,7 +5,7 @@ import LikedSongsLink from "@/components/LikedSongsLink";
 import PageTitle from "@/components/PageTitle";
 import Loading from "./loading";
 
-const Home = async () => {
+const Home = () => {
   return (
     <section className="page-wrapper">
       <Header>

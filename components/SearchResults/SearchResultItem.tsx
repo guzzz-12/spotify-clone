@@ -1,6 +1,5 @@
 "use client"
 
-import Image from "next/image";
 import { Tooltip } from "react-tooltip";
 import LikeBtn from "../LikeBtn";
 import AddToPlaylistBtn from "../AddToPlaylistBtn";
@@ -26,9 +25,8 @@ const SearchResultItem = ({song}: Props) => {
       <Tooltip id="playlist-btn" className="z-50" />
       <div className="flex items-center gap-3 w-full">
         <div className="relative w-12 h-12 flex-shrink-0 rounded-md overflow-hidden">
-          <Image
-            className="w-full h-auto object-cover"
-            fill
+          <img
+            className="block w-full h-auto object-cover"
             src={imageUrl || "/images/song-default-image.webp"}
             alt={`${song.title} image`}
           />

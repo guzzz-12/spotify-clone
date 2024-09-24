@@ -1,7 +1,6 @@
 "use client"
 
 import { Dispatch, MouseEvent, SetStateAction } from "react";
-import Image from "next/image";
 import { Tooltip } from "react-tooltip";
 import { BiEdit, BiTrash } from "react-icons/bi";
 import useLoadImage from "@/hooks/useLoadImage";
@@ -43,9 +42,8 @@ const MyUploadedSongItem = ({song, setDeleteModalOpen, setDeletedSongId}: Props)
       <div className="absolute top-0 left-0 w-full h-full bg-black/0 pointer-events-none transition-colors group-hover:bg-black/60 z-10" />
 
       <div className="relative w-full aspect-square rounded-md overflow-hidden">
-        <Image
-          className="object-cover"
-          fill
+        <img
+          className="block w-full h-full object-cover"
           src={imageUrl || "/images/song-default-image.webp"}
           alt={`${song.title} image`}
         />

@@ -1,11 +1,10 @@
 "use client"
 
 import { ReactNode, createContext, useEffect, useState } from "react";
-import { SupabaseClient, User } from "@supabase/auth-helpers-nextjs";
-import { useSessionContext, useUser } from "@supabase/auth-helpers-react";
-import { PostgrestError } from "@supabase/supabase-js";
+import { PostgrestError, User } from "@supabase/supabase-js";
+import useCurrentSession from "@/hooks/useCurrentSession";
+import { supabaseBrowserClient } from "@/utils/supabaseBrowserClient";
 import { UserDetails, SubscriptionWithPricesAndProducts } from "@/types";
-import { Database } from "@/types/supabase";
 
 type UserContextType = {
   accessToken: string | null;
@@ -34,11 +33,10 @@ export const UserContext = createContext<UserContextType>({
 });
 
 const UserProvider = ({children}: {children: ReactNode}) => {
-  const supabase = useSessionContext();
-  const supabaseClient: SupabaseClient<Database> = supabase.supabaseClient
-  const userData = useUser();
+  const supabase = supabaseBrowserClient;
+  const session = useCurrentSession(state => state.session);
 
-  const accessToken = supabase.session?.access_token ?? null;
+  const accessToken = session?.access_token ?? null;
 
   const [user, setUser] = useState<User | null>(null);
   const [userDetails, setUserDetails] = useState<UserDetails | null>(null);
@@ -50,36 +48,36 @@ const UserProvider = ({children}: {children: ReactNode}) => {
   
   // Inicializar el state de la data del usuario
   useEffect(() => {
-    if (userData) {
-      setUser(userData);
+    if (session) {
+      setUser(session.user);
     }
-  }, [userData]);
+  }, [session]);
 
-  /** Consultar los detalles del usuario */
+  /** Consultar los detalles del usuario en la base de datos */
   const getUserDetails = async () => {
     try {
       setIsLoadingUser(true);
 
-      const {data, error} = await supabaseClient
+      const {data: userData, error} = await supabase
       .from("users")
       .select("*")
-      .single();
+      .limit(1);
 
       if (error) {
         throw new Error(error.message);
       };
 
-      const {full_name, first_name} = data;
+      const {id, full_name, first_name} = userData[0];
 
       // Actualizar el nomre y el apellido si aún no se han actualizado
       if (full_name && !first_name) {
         const first_name = full_name.split(" ")[0];
         const last_name = full_name.split(" ")[1];
 
-        const {data: updatedUserDetails, error: updateUserError} = await supabaseClient
+        const {data: updatedUserDetails, error: updateUserError} = await supabase
         .from("users")
         .update({first_name, last_name})
-        .eq("id", data.id)
+        .eq("id", id)
         .single();
 
         if (updateUserError) {
@@ -89,12 +87,13 @@ const UserProvider = ({children}: {children: ReactNode}) => {
         return setUserDetails(updatedUserDetails);
       };
 
-      setUserDetails(data);
+      setUserDetails(userData[0]);
       
     } catch (error: any) {
-      setError(error.message)
+      setError(error.message);
+
     } finally {
-      setIsLoadingUser(false)
+      setIsLoadingUser(false);
     }
   };
   
@@ -104,11 +103,11 @@ const UserProvider = ({children}: {children: ReactNode}) => {
     try {
       setIsLoadingSubscription(true);
 
-      const {data, error: subscriptionError} = await supabaseClient
+      const {data: subscriptionData, error: subscriptionError} = await supabase
       .from("subscriptions")
       .select("*, prices(*, products(*))")
       .in("status", ["trialing", "active"])
-      .single();
+      .limit(1);
 
       // Si no posee suscripción, mostrar el modal de suscripción
       if (subscriptionError) {
@@ -119,7 +118,7 @@ const UserProvider = ({children}: {children: ReactNode}) => {
         throw new Error(subscriptionError.message)
       };
 
-      setSubscription(data);
+      setSubscription(subscriptionData[0]);
       
     } catch (error: any) {
       setError(error.message)      

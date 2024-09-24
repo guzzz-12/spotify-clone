@@ -1,19 +1,9 @@
 import Stripe from "stripe";
-import { createClient } from "@supabase/supabase-js";
 import { Database } from "@/types/supabase";
 import { Price, Product } from "@/types";
 import { stripe } from "./stripe";
 import { toDateTime } from "./helpers";
-
-export const supabaseAdmin = createClient<Database>(
-  process.env.NEXT_PUBLIC_SUPABASE_URL!,
-  process.env.SUPABASE_SERVICE_ROLE_KEY!,
-  {
-    auth: {
-      persistSession: false
-    }
-  }
-);
+import { supabaseServerClient } from "@/utils/supabaseServerClient";
 
 /** Actualizar o insertar un product de Stripe en la base de datos */
 export const upsertProduct = async (product: Stripe.Product) => {
@@ -27,7 +17,9 @@ export const upsertProduct = async (product: Stripe.Product) => {
   };
 
   try {
-    const {error} = await supabaseAdmin.from("products").upsert(productData);
+    const supabase = await supabaseServerClient();
+
+    const {error} = await supabase.from("products").upsert(productData);
 
     if (error) {
       throw new Error(error.message)
@@ -43,7 +35,9 @@ export const upsertProduct = async (product: Stripe.Product) => {
 /** Eliminar un product y su price asociado */
 export const deleteProduct = async (productData: Stripe.Product) => {
   try {
-    const {error} = await supabaseAdmin
+    const supabase = await supabaseServerClient();
+
+    const {error} = await supabase
     .from("products")
     .delete()
     .eq("id", productData.id)
@@ -77,7 +71,9 @@ export const upsertPrice = async (priceData: Stripe.Price) => {
   };
 
   try {
-    const {error} = await supabaseAdmin.from("prices").upsert(price);
+    const supabase = await supabaseServerClient();
+
+    const {error} = await supabase.from("prices").upsert(price);
 
     if (error) {
       throw new Error(error.message)
@@ -96,8 +92,10 @@ export const getOrCreateCustomer = async (props: {uuid: string, name: string, em
   try {
     const {uuid, name, email} = props;
 
+    const supabase = await supabaseServerClient();
+
     // Chequear si el usuario asociado al UUID existe en la base de datos
-    const {data: userData, error: userError} = await supabaseAdmin
+    const {data: userData, error: userError} = await supabase
     .from("users")
     .select("id")
     .eq("id", uuid)
@@ -108,7 +106,7 @@ export const getOrCreateCustomer = async (props: {uuid: string, name: string, em
     };
 
     // Consultar si existe en la DB un customer asociado al UUID
-    const {data: customerData, error: customerError} = await supabaseAdmin
+    const {data: customerData, error: customerError} = await supabase
     .from("customers")
     .select("stripe_customer_id")
     .eq("id", uuid)
@@ -129,7 +127,7 @@ export const getOrCreateCustomer = async (props: {uuid: string, name: string, em
       });
 
       // Almacenar el customer en la DB
-      const {data: newCustomerData, error} = await supabaseAdmin
+      const {data: newCustomerData, error} = await supabase
       .from("customers")
       .insert({id: uuid, stripe_customer_id: customer.id})
       .select("stripe_customer_id")
@@ -142,7 +140,7 @@ export const getOrCreateCustomer = async (props: {uuid: string, name: string, em
       console.log(`Customer ${customer.id} creado exitosamente`);
 
       // Agregar el customer de Stripe al usuario en Supabase
-      const {error: userUpdateError} = await supabaseAdmin
+      const {error: userUpdateError} = await supabase
       .from("users")
       .update({stripe_customer: customer.id})
       .eq("id", uuid);
@@ -152,7 +150,7 @@ export const getOrCreateCustomer = async (props: {uuid: string, name: string, em
       if (userUpdateError) {
         const customerId = newCustomerData.stripe_customer_id;
         await stripe.customers.del(customerId);
-        await supabaseAdmin.from("customers").delete().eq("stripe_customer_id", customerId);
+        await supabase.from("customers").delete().eq("stripe_customer_id", customerId);
         throw new Error(userUpdateError.message);
       };
   
@@ -183,7 +181,9 @@ export const updateUserBillingDetails = async (props: {uuid: string, payment_met
   };
 
   try {
-    const {error} = await supabaseAdmin
+    const supabase = await supabaseServerClient();
+
+    const {error} = await supabase
     .from("users")
     .update({
       billing_address: {...address},
@@ -209,7 +209,9 @@ export const manageSubscriptionStatus = async (props: {subscriptionId: string, c
   const {customerId, subscriptionId, action} = props;
 
   try {
-    const {data: customerData, error: customerError} = await supabaseAdmin
+    const supabase = await supabaseServerClient();
+
+    const {data: customerData, error: customerError} = await supabase
     .from("customers")
     .select("id")
     .eq("stripe_customer_id", customerId)
@@ -246,7 +248,7 @@ export const manageSubscriptionStatus = async (props: {subscriptionId: string, c
     };
 
     if (action === "delete") {
-      const {error: deleteError} = await supabaseAdmin
+      const {error: deleteError} = await supabase
       .from("subscriptions")
       .delete()
       .eq("id", subscriptionId)
@@ -264,7 +266,7 @@ export const manageSubscriptionStatus = async (props: {subscriptionId: string, c
     // para evitar múltiples suscripciones.
     if (action === "create") {
       // Verificar si ya posee una suscripción
-      const {data: currentSubscription} = await supabaseAdmin
+      const {data: currentSubscription} = await supabase
       .from("subscriptions")
       .select("*")
       .eq("user_id", uuid)
@@ -280,7 +282,7 @@ export const manageSubscriptionStatus = async (props: {subscriptionId: string, c
       };
     };
     
-    const {error} = await supabaseAdmin.from("subscriptions").upsert(subscriptionData);
+    const {error} = await supabase.from("subscriptions").upsert(subscriptionData);
 
     if (error) {
       throw new Error(error.message)

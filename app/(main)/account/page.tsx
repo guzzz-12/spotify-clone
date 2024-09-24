@@ -1,16 +1,13 @@
 import { redirect } from "next/navigation";
-import { cookies } from "next/headers";
-import { createServerComponentClient } from "@supabase/auth-helpers-nextjs";
 import { FaUserCog } from "react-icons/fa";
 import Header from "@/components/Header";
 import getUserUploadedSongs from "@/serverActions/getUserUploadedSongs";
 import AccountsTabs from "./components/AccountsTabs";
+import { supabaseServerClient } from "@/utils/supabaseServerClient";
 
 const AccountPage = async () => {
-  const cookieStore = cookies();
-
   // Verificar si hay usuario autenticado (server side)
-  const supabase = createServerComponentClient({ cookies: () => cookieStore });
+  const supabase = await supabaseServerClient();
   const userData = await supabase.auth.getUser();
 
   // Redirigir si no hay usuario

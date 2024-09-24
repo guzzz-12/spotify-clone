@@ -1,13 +1,13 @@
 "use client"
 
 import { useEffect, useState, ReactNode } from "react";
-import * as Dialog from "@radix-ui/react-dialog";
-import { AiOutlineClose } from "react-icons/ai";
 import { AnimatePresence, motion } from "framer-motion";
+import { AiOutlineClose } from "react-icons/ai";
+import * as Dialog from "@radix-ui/react-dialog";
 
 interface Props {
   isOpen: boolean;
-  title: string;
+  title: string | ReactNode;
   description: string | ReactNode;
   children: ReactNode;
   onOpenChange: (isOpen: boolean) => void;
@@ -56,7 +56,7 @@ const GenericModal = (props: Props) => {
                   <AiOutlineClose />
                 </button>
               </Dialog.Close>
-              <Dialog.Title className="mb-2 text-center text-xl font-bold">
+              <Dialog.Title className="mb-2 text-center text-xl text-white font-semibold">
                 {title}
               </Dialog.Title>
               <Dialog.Description className="mb-5 text-sm text-center text-gray-400 leading-normal">

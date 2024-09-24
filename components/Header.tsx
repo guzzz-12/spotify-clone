@@ -10,13 +10,13 @@ import { BiSearch } from "react-icons/bi";
 import { AiOutlineUser, AiOutlineMenu } from "react-icons/ai";
 import toast from "react-hot-toast";
 import { Tooltip } from "react-tooltip";
-import { useSupabaseClient } from "@supabase/auth-helpers-react";
 
 import { Sheet, SheetContent, SheetTrigger } from "./ui/Sheet";
 import Button from "./Button";
 import SidebarContent from "./SidebarContent";
-import useAuthModal from "@/hooks/useAuthModal";
 import { UserContext } from "@/context/UserProvider";
+import { supabaseBrowserClient } from "@/utils/supabaseBrowserClient";
+import useCurrentSession from "@/hooks/useCurrentSession";
 
 interface Props {
   children: ReactNode;
@@ -25,11 +25,12 @@ interface Props {
 
 const Header = ({children, className}: Props) => {
   const btnRef = useRef<HTMLButtonElement | null>(null);
-  const {back, forward, push, refresh} = useRouter();
+  const {back, forward, push, refresh, replace} = useRouter();
+  const {isLoadingUser} = useContext(UserContext);
 
-  const {user, isLoadingUser} = useContext(UserContext);
-  const supabase = useSupabaseClient();
-  const {onOpenChange, setAuthType} = useAuthModal();
+  const {session, loadingSession} = useCurrentSession(state => state);
+
+  const supabase = supabaseBrowserClient;
 
   const logoutHandler = async () => {
     const {error} = await supabase.auth.signOut();
@@ -83,9 +84,9 @@ const Header = ({children, className}: Props) => {
           </Link>
         </div>
 
-        {!isLoadingUser &&
+        {(!isLoadingUser && !loadingSession) &&
           <div className="flex justify-between items-center gap-2">
-            {user &&
+            {session &&
               <>
                 <Tooltip id="account-tooltip" />
                 <Button
@@ -109,27 +110,21 @@ const Header = ({children, className}: Props) => {
               </>
             }
 
-            {!user &&
+            {(!session && !loadingSession)&&
               <>
                 <div className="flex justify-between items-center gap-2">
                   <Button
                     ref={btnRef}
                     className="font-base bg-white disabled:cursor-not-allowed"
                     disabled={isLoadingUser}
-                    onClickHandler={() => {
-                      setAuthType("sign_up");
-                      onOpenChange(true);
-                    }}
-                    >
+                    onClickHandler={() => replace("/signin?new_account=true")}
+                  >
                     Sign up
                   </Button>
                   <Button
                     className="font-base text-white bg-transparent disabled:cursor-not-allowed"
                     disabled={isLoadingUser}
-                    onClickHandler={() => {
-                      setAuthType("sign_in");
-                      onOpenChange(true);
-                    }}
+                    onClickHandler={() => replace("/signin")}
                   >
                     Login
                   </Button>

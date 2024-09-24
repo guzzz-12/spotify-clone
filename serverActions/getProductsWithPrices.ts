@@ -1,11 +1,7 @@
-import { cookies } from "next/headers";
-import { createServerComponentClient } from "@supabase/auth-helpers-nextjs";
-import { Database } from "@/types/supabase";
+import { supabaseServerClient } from "@/utils/supabaseServerClient";
 
 const getProductsWithPrices = async () => {
-  const supabase = createServerComponentClient<Database>({
-    cookies
-  });
+  const supabase = await supabaseServerClient();
 
   try {
     const {data, error} = await supabase

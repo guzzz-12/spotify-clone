@@ -4,6 +4,7 @@ import { useState, useContext } from "react";
 import { toast } from "react-hot-toast";
 import GenericModal from "./GenericModal";
 import Button from "./Button";
+import Typography from "./Typography";
 import useSubscriptionModal from "@/hooks/useSubscriptionModal";
 import { UserContext } from "@/context/UserProvider";
 import { getStripe } from "@/libs/stripeClient";
@@ -123,7 +124,7 @@ const SubscriptionModal = (props: Props) => {
             };
 
             return (
-              <>
+              <div key={product.id}>
                 {product.prices.map(price => {
                   if (!subscription || subscription.prices!.id !== price.id) {
                     return (
@@ -141,6 +142,7 @@ const SubscriptionModal = (props: Props) => {
                   if (subscription && subscription.prices!.id === price.id) {
                     return (
                       <Button
+                        key={price.id}
                         className="w-full mb-4"
                         disabled={isLoading || isLoadingUser || isLoadingSubscription}
                         onClickHandler={cancelSubscriptionHandler}
@@ -152,7 +154,7 @@ const SubscriptionModal = (props: Props) => {
 
                   return null;
                 })}
-              </>
+              </div>
             )
           })}
         </div>

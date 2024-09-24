@@ -2,7 +2,6 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { useSession } from "@supabase/auth-helpers-react";
 import { FormProvider, useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
@@ -11,6 +10,7 @@ import toast from "react-hot-toast";
 import { MdOutlineBadge } from "react-icons/md";
 import FormInput from "@/components/FormInput";
 import Button from "@/components/Button";
+import useCurrentSession from "@/hooks/useCurrentSession";
 
 const UserNameFormSchema = z.object({
   firstName: z
@@ -30,7 +30,7 @@ type formSchemaType = z.infer<typeof UserNameFormSchema>;
 const UpdateUserNameForm = () => {
   const router = useRouter();
 
-  const session = useSession();
+  const session = useCurrentSession(state => state.session);
 
   const [loading, setLoading] = useState(false);
 

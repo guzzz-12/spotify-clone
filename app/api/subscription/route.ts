@@ -1,9 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
-import { cookies } from "next/headers";
-import { createRouteHandlerClient } from "@supabase/auth-helpers-nextjs";
 import { stripe } from "@/libs/stripe";
 import { getOrCreateCustomer } from "@/libs/supabaseAdmin";
-import { Database } from "@/types/supabase";
+import { supabaseServerClient } from "@/utils/supabaseServerClient";
 import { Price } from "@/types";
 
 interface Body {
@@ -19,7 +17,7 @@ interface Body {
 export async function POST(req: NextRequest) {
   const {price, quantity, metadata} = (await req.json()) as Body;
 
-  const supabase = createRouteHandlerClient<Database>({cookies});
+  const supabase = await supabaseServerClient();
 
   const {data} = await supabase.auth.getUser();
 
@@ -44,8 +42,8 @@ export async function POST(req: NextRequest) {
       customer: customer.stripe_customer_id,
       mode: "subscription",
       allow_promotion_codes: true,
-      success_url: `${process.env.NEXT_PUBLIC_SITE_URL}/account`,
-      cancel_url: process.env.NEXT_PUBLIC_SITE_URL,
+      success_url: `${process.env.NEXT_PUBLIC_PROJECT_URL}/account`,
+      cancel_url: process.env.NEXT_PUBLIC_PROJECT_URL,
       subscription_data: {
         metadata,
         trial_from_plan: false
@@ -77,7 +75,7 @@ export async function POST(req: NextRequest) {
  */
 export async function DELETE(_req: NextRequest) {
   try {
-    const supabase = createRouteHandlerClient<Database>({cookies});
+    const supabase = await supabaseServerClient();
 
     const {data} = await supabase.auth.getUser();
 

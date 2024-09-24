@@ -3,8 +3,7 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import { usePathname } from "next/navigation";
 import { AnimatePresence, motion } from "framer-motion";
-import { Session, SupabaseClient } from "@supabase/supabase-js";
-import { useSessionContext } from "@supabase/auth-helpers-react";
+import { Session } from "@supabase/supabase-js";
 import { twMerge } from "tailwind-merge";
 import toast from "react-hot-toast";
 import { IconType } from "react-icons";
@@ -17,7 +16,7 @@ import SongLibrary from "./SongLibrary";
 import Button from "./Button";
 import usePlayer from "@/hooks/usePlayer";
 import useCurrentSession from "@/hooks/useCurrentSession";
-import { Database } from "@/types/supabase";
+import { supabaseBrowserClient } from "@/utils/supabaseBrowserClient";
 import { Song } from "@/types";
 
 export type RouteItem = {
@@ -31,9 +30,7 @@ const SidebarContent = () => {
   const currentPageRef = useRef(0);
   const path = usePathname();
 
-  const supabase = useSessionContext();
-  const supabaseClient: SupabaseClient<Database> = supabase.supabaseClient;
-  const currentSession = supabase.session;
+  const supabase = supabaseBrowserClient;
 
   const {playList} = usePlayer();
 
@@ -42,15 +39,15 @@ const SidebarContent = () => {
   const [loading, setLoading] = useState(true);
   const [totalSongs, setTotalSongs] = useState(0);
 
-  const {setSession} = useCurrentSession();
+  const {session, setSession} = useCurrentSession();
 
   /**
    * Consultar y paginar las canciones
    * previniendo queries duplicados.
    */
-  const getSongs = async (page: number, session: Session | null) => {
+  const getSongs = async (page: number, session: Session) => {
     try {
-      if (!session || page === currentPageRef.current) {
+      if (page === currentPageRef.current) {
         setLoading(false);
         return;
       };
@@ -66,7 +63,7 @@ const SidebarContent = () => {
       
       setLoading(true);
       
-      const res = await supabaseClient
+      const res = await supabase
       .from("songs")
       .select("*", {count: "exact"})
       .eq("user_id", user.id)
@@ -91,37 +88,31 @@ const SidebarContent = () => {
       toast.error(error.message, {position: "bottom-left"});
 
     } finally {
-      setLoading(false)
+      setLoading(false);
     }
   };
 
 
   useEffect(() => {
-    supabaseClient.auth.onAuthStateChange((e, session) => {
-      // cargar la primera página de canciones
-      // Almacenar la sesión en el state global
-      if (e === "SIGNED_IN" || e === "INITIAL_SESSION") {
-        setSession(session);
-        getSongs(1, session);
-      }
+    if (session) {
+      getSongs(1, session);
 
-      // Limpiar el state de las canciones cuando el usuario cierra sesión
-      if (e === "SIGNED_OUT") {
-        setSongs([]);
-        setSession(null);
-      };
-    });
-  }, []);
+    } else {
+      setSongs([]);
+      setSession(null);
+      setLoading(false);
+    }
+  }, [session]);
   
   
   // Consultar las siguientes páginas de canciones
   // si el usuario está autenticado
   useEffect(() => {
-    if (currentSession && page > 1 && page !== currentPageRef.current) {
-      getSongs(page, currentSession)
+    if (session && page > 1 && page !== currentPageRef.current) {
+      getSongs(page, session)
     };
 
-  }, [currentSession, page, currentPageRef]);
+  }, [session, page, currentPageRef]);
 
 
   const routes: RouteItem[] = useMemo(() => {
@@ -172,7 +163,7 @@ const SidebarContent = () => {
       <Box className="flex flex-col justify-start items-stretch h-full pb-10 scrollbar-track-neutral-400 custom-scrollbar overflow-y-auto">
         <SongLibrary userSongs={songs} loading={loading} />
 
-        {currentSession && songs.length > 0 &&
+        {session && songs.length > 0 &&
           <Button
             className={twMerge("mt-auto mb-3 mx-auto text-sm", endOfResults && "font-normal text-gray-400 bg-transparent")}
             disabled={loading || endOfResults}

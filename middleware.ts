@@ -1,12 +1,22 @@
-import { NextRequest,  NextResponse } from "next/server";
-import { createMiddlewareClient } from "@supabase/auth-helpers-nextjs";
+import { NextResponse, type NextRequest } from "next/server";
+import { updateSession } from "./utils/supabaseMiddleware";
 
-export default async function middleware(req: NextRequest) {
-  const res = NextResponse.next();
+export async function middleware(request: NextRequest) {
+  // Permitir el acceso al home page a usuarios no autenticados
+  if (request.nextUrl.pathname === "/") {
+    return NextResponse.next();
+  }
 
-  const supabase = createMiddlewareClient({req, res});
+  // Excluir del middleware los endpoints de autenticación
+  if (request.nextUrl.pathname.includes("/api/auth")) {
+    return NextResponse.next();
+  }
 
-  const {data, error} = await supabase.auth.getSession();
+  return await updateSession(request);
+}
 
-  return res;
-};
+export const config = {
+  matcher: [
+    "/((?!_next/static|_next/image|favicon.ico|sitemap.xml|robots.txt).*)"
+  ],
+}

@@ -1,7 +1,6 @@
 "use client"
 
 import { useEffect, useState } from "react";
-import { useSessionContext,SupabaseClient } from "@supabase/auth-helpers-react";
 import { DndContext, DragEndEvent, closestCenter, useSensors, useSensor, PointerSensor } from "@dnd-kit/core";
 import { arrayMove, SortableContext, verticalListSortingStrategy } from "@dnd-kit/sortable";
 import { AnimatePresence, motion } from "framer-motion";
@@ -14,7 +13,7 @@ import PlayListModalItem from "./PlayListModalItem";
 import usePlayer from "@/hooks/usePlayer";
 import usePlaylistModal from "@/hooks/usePlaylistModal";
 import { Song } from "@/types";
-import { Database } from "@/types/supabase";
+import { supabaseBrowserClient } from "@/utils/supabaseBrowserClient";
 
 const PlaylistModal = () => {
   const [songs, setSongs] = useState<Song[]>([]);
@@ -23,8 +22,7 @@ const PlaylistModal = () => {
   const {isPlaylistOpen, openPlaylist} = usePlaylistModal();
   const {playList, setPlayList, activeId, setActiveId, removeFromPlayList} = usePlayer();
 
-  const supabase = useSessionContext();
-  const supabaseClient: SupabaseClient<Database> = supabase.supabaseClient;
+  const supabase = supabaseBrowserClient;
 
   /** Query para consultar la data de las canciones del playlist */
   const getSongsData = async (ids: number[]) => {
@@ -42,7 +40,7 @@ const PlaylistModal = () => {
       
       // La data viene ordenada por ID en orden ascendente
       // sin importar el orden del array de IDs proporcionado
-      const {data} = await supabaseClient
+      const {data} = await supabase
       .from("songs")
       .select("*")
       .in("id", ids);
@@ -56,7 +54,7 @@ const PlaylistModal = () => {
       // Buscar el public url de la imagen de cada canción en el bucket
       for(let item of data) {
         const itemWithImageUrl = {...item};
-        const {data: {publicUrl}} = supabaseClient.storage.from("images").getPublicUrl(item.image_url);
+        const {data: {publicUrl}} = supabase.storage.from("images").getPublicUrl(item.image_url);
         itemWithImageUrl.image_url = publicUrl;
 
         songsWithImage.push(itemWithImageUrl);
@@ -135,7 +133,7 @@ const PlaylistModal = () => {
     if (playList.length > 0) {
       getSongsData(playList)
     }
-  }, [playList, supabaseClient]);
+  }, [playList, supabase]);
 
 
   return (

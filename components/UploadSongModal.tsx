@@ -9,7 +9,6 @@ import { AnimatePresence, motion } from "framer-motion";
 import { twMerge } from "tailwind-merge";
 import { toast } from "react-hot-toast";
 import uniqueId from "uniqid";
-import { SupabaseClient, useSessionContext } from "@supabase/auth-helpers-react";
 import { AiOutlineUser } from "react-icons/ai";
 import { MdDriveFileRenameOutline } from "react-icons/md";
 import { BiLoaderAlt } from "react-icons/bi";
@@ -19,8 +18,8 @@ import GenericModal from "./GenericModal";
 import FormInput from "./FormInput";
 import Button from "./Button";
 import { UserContext } from "@/context/UserProvider";
-import { Database } from "@/types/supabase";
 import { imageProcessor } from "@/utils/imageCompression";
+import { supabaseBrowserClient } from "@/utils/supabaseBrowserClient";
 
 const AUTHOR_NAME_REGEX = /^[A-Za-zÀ-ž0-9'\s]{3,32}$/;
 const SONG_TITLE_REGEX = /^[A-Za-zÀ-ž0-9'_\-\s]{3,32}$/;
@@ -50,8 +49,7 @@ const UploadSongModal = () => {
 
   const {userDetails} = useContext(UserContext);
 
-  const supabase = useSessionContext();
-  const supabaseClient: SupabaseClient<Database> = supabase.supabaseClient;
+  const supabase = supabaseBrowserClient;
 
   const {isOpen, onOpenChange} = useUploadModal();
 
@@ -146,7 +144,7 @@ const UploadSongModal = () => {
       .toLowerCase();
 
       /** Subir la canción al bucket */
-      const {data: songData, error: songError} = await supabaseClient
+      const {data: songData, error: songError} = await supabase
       .storage
       .from("songs")
       .upload(`user-${userDetails?.id}/song-${songName.replace(" ", "-")}-${songId}`, selectedAudioFile, {
@@ -159,7 +157,7 @@ const UploadSongModal = () => {
       };
 
       /** Subir la imagen de la canción al bucket */
-      const {data: imageData, error: imageError} = await supabaseClient
+      const {data: imageData, error: imageError} = await supabase
       .storage
       .from("images")
       .upload(`user-${userDetails?.id}/image-${songImageFileName}-${songId}`, selectedImageFile, {
@@ -172,7 +170,7 @@ const UploadSongModal = () => {
       };
 
       /** Almacenar la data de la canción en la base de datos */
-      const {error: dbError} = await supabaseClient.from("songs").insert({
+      const {error: dbError} = await supabase.from("songs").insert({
         user_id: userDetails!.id,
         title: songName,
         author: songAuthor,
