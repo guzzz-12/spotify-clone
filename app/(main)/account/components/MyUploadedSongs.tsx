@@ -3,6 +3,7 @@
 import { useState } from "react";
 import MyUploadedSongItem from "./MyUploadedSongItem";
 import DeleteSongModal from "./DeleteSongModal";
+import UpdateSongModal from "./UpdateSongModal";
 import { Song } from "@/types";
 
 interface Props {
@@ -15,6 +16,8 @@ const MyUploadedSongs = ({userSongs}: Props) => {
 
   return (
     <section className="mx-4 mb-7 p-4 border-t border-neutral-500 rounded-b-md bg-neutral-700">
+      <UpdateSongModal />
+
       <DeleteSongModal
         isOpen={isDeleteModalOpen}
         songId={deletedSongId}

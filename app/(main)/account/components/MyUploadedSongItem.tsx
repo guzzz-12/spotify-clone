@@ -5,6 +5,7 @@ import { Tooltip } from "react-tooltip";
 import { BiEdit, BiTrash } from "react-icons/bi";
 import useLoadImage from "@/hooks/useLoadImage";
 import usePlayer from "@/hooks/usePlayer";
+import useUpdateSongModal from "@/hooks/useUpdateSongModal";
 import { Song } from "@/types";
 
 interface Props {
@@ -16,9 +17,15 @@ interface Props {
 const MyUploadedSongItem = ({song, setDeleteModalOpen, setDeletedSongId}: Props) => {
   const imageUrl = useLoadImage(song);
   const {setActiveId, resetPlayer} = usePlayer();
+  const {setUpdatedSongId, setIsOpen} = useUpdateSongModal();
 
+  /** Abrir el modal de edición de canciones */
   const onEditSonHandler = (e: MouseEvent<HTMLButtonElement>) => {
     e.stopPropagation();
+
+    setUpdatedSongId(song.id);
+    setIsOpen(true);
+
     resetPlayer();
   }
 
