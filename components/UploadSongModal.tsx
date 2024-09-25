@@ -1,8 +1,8 @@
 "use client"
 
-import { useEffect, useState, useRef, ChangeEvent, useContext } from "react";
+import { useState, useRef, useContext } from "react";
 import { useRouter } from "next/navigation";
-import { FormProvider, useForm } from "react-hook-form";
+import { Controller, FormProvider, useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { AnimatePresence, motion } from "framer-motion";
@@ -18,25 +18,43 @@ import GenericModal from "./GenericModal";
 import FormInput from "./FormInput";
 import Button from "./Button";
 import { UserContext } from "@/context/UserProvider";
-import { imageProcessor } from "@/utils/imageCompression";
+import { fileToBase64, imageProcessor } from "@/utils/imageCompression";
 import { supabaseBrowserClient } from "@/utils/supabaseBrowserClient";
 
 const AUTHOR_NAME_REGEX = /^[A-Za-zÀ-ž0-9'\s]{3,32}$/;
 const SONG_TITLE_REGEX = /^[A-Za-zÀ-ž0-9'_\-\s]{3,32}$/;
+const ACCEPTED_AUDIO_TYPES = ["audio/mpeg", "audio/wav"];
+const ACCEPTED_IMAGE_TYPES = ["image/jpeg", "image/jpg", "image/png", "image/webp"];
 
 const SongFormSchema = z.object({
   songAuthor: z
     .string({required_error: "The author is required"})
-    .nonempty("The author is required")
+    .min(0, {message: "The author is required"})
     .min(3, "The author name must contain at least 3 characters")
     .max(32, "The author name must contain maximum 32 characters")
     .regex(AUTHOR_NAME_REGEX, {message: "The author name must contain only alphanumeric characters"}),
   songName: z
     .string({required_error: "The title is required"})
-    .nonempty("The title is required")
+    .min(0, {message: "The title is required"})
     .min(3, "The title must contain at least 3 characters")
     .max(32, "The title must contain maximum 32 characters")
-    .regex(SONG_TITLE_REGEX, {message: "The title must contain only letters, numbers, '-' and '_'"})
+    .regex(SONG_TITLE_REGEX, {message: "The title must contain only letters, numbers, '-' and '_'"}),
+  songFile: z
+    .any()
+    .refine((file: File) => !!file, "The song is required")
+    .refine((file) => file.size <= 20000000, "The song must be maximum 20 MB")
+    .refine(
+      (file) => ACCEPTED_AUDIO_TYPES.includes(file.type),
+      "Only .mp3 and .wav formats are supported."
+    ),
+  image: z
+    .any()
+    .refine((file: File) => !!file, "The image is required")
+    .refine((file) => file.size <= 5000000, "The image must be maximum 5 MB")
+    .refine(
+      (file) => ACCEPTED_IMAGE_TYPES.includes(file.type),
+      "Only .jpg, .jpeg, .png and .webp formats are supported."
+    ),
 });
 
 export type SongFormSchemaType = z.infer<typeof SongFormSchema>;
@@ -49,86 +67,77 @@ const UploadSongModal = () => {
 
   const {userDetails} = useContext(UserContext);
 
+  const [processingImage, setProcessingImage] = useState(false);
+
   const supabase = supabaseBrowserClient;
 
   const {isOpen, onOpenChange} = useUploadModal();
 
-  const methods = useForm<SongFormSchemaType>({resolver: zodResolver(SongFormSchema)});
+  const formProps = useForm<SongFormSchemaType>({
+    resolver: zodResolver(SongFormSchema),
+    defaultValues: {
+      songAuthor: "",
+      songName: "",
+      songFile: "",
+      image: "",
+    }
+  });
 
   const [selectedAudioFile, setSelectedAudioFile] = useState<File | null>(null);
   const [selectedImageFile, setSelectedImageFile] = useState<File | null>(null);
   const [selectedImagePreview, setSelectedImagePreview] = useState<string | null>(null);
   const [isUploading, setIsUploading] = useState(false);
 
-  const [audioRequiredError, setAudioRequiredError] = useState(false);
-  const [imageRequiredError, setImageRequiredError] = useState(false);
+  /** Resetear el formulario y el state de los archivos seleccionados al cerrar el modal */
+  const onCloseModalHandler = () => {
+    formProps.reset();
 
-  /** Resetear el formulario y el state de los archivos seleccionados */
-  useEffect(() => {
-    if (!isOpen) {
-      methods.reset();
+    setSelectedAudioFile(null);
+    setSelectedImageFile(null);
+    setSelectedImagePreview(null);
 
-      setSelectedAudioFile(null);
-      setSelectedImageFile(null);
-      setSelectedImagePreview(null);
+    if (audioFileInputRef.current) {
+      audioFileInputRef.current.value = "";
+    };
 
-      setAudioRequiredError(false);
-      setImageRequiredError(false);
-
-      if (audioFileInputRef.current) {
-        audioFileInputRef.current.value = "";
-      };
-
-      if (imageFileInputRef.current) {
-        imageFileInputRef.current.value = "";
-      };
-    }
-  }, [isOpen]);
+    if (imageFileInputRef.current) {
+      imageFileInputRef.current.value = "";
+    };
+  }
 
 
   /** Handler del evento onchange del input del audio*/
-  const onAudioFileChangeHandler = (e: ChangeEvent<HTMLInputElement>) => {
-    setAudioRequiredError(false);
-    const audioFile = e.target.files?.[0] ?? null;
-    setSelectedAudioFile(audioFile);
+  const onAudioFileChangeHandler = (audio: File | null) => {
+    if (audio) {
+      setSelectedAudioFile(audio);
+
+      formProps.setValue("songFile", audio);
+      formProps.trigger("songFile");
+    }
   };
 
   
   /** Handler del evento onchange del input de la imagen*/
-  const onImageFileChangeHandler = async (e: ChangeEvent<HTMLInputElement>) => {
-    setImageRequiredError(false);
-    const imageFile = e.target.files?.[0] ?? null;
-
-    if (imageFile) {
-      try {
-        const compressedImage = await imageProcessor(imageFile);
-        const imagePreview = URL.createObjectURL(imageFile);
-        
-        setSelectedImageFile(compressedImage);
-        setSelectedImagePreview(imagePreview);
-
-      } catch (error) {
-        toast.error("Error processing file. refresh the page and try again")
-      }
-    };
+  const onImageFileChangeHandler = async (img: File | null) => {
+    if (img) {
+      setProcessingImage(true);
+  
+      const compressedImg = await imageProcessor(img) as File;
+      const imgPreview = await fileToBase64(compressedImg);
+  
+      setProcessingImage(false);
+  
+      setSelectedImageFile(compressedImg);
+      setSelectedImagePreview(imgPreview);
+  
+      formProps.setValue("image", compressedImg);
+      formProps.trigger("image");
+    }
   };
 
 
   /** Enviar el archivo */
   const onSubmitHandler = async (values: SongFormSchemaType) => {
-    if (!selectedAudioFile && !selectedImageFile) {
-      setAudioRequiredError(true);
-      return setImageRequiredError(true);
-    };
-
-    if (!selectedAudioFile) {
-      return setAudioRequiredError(true)
-    };
-
-    if (!selectedImageFile) {
-      return setImageRequiredError(true)
-    };
-    
     try {
       setIsUploading(true);
 
@@ -136,7 +145,7 @@ const UploadSongModal = () => {
       const songName = values.songName
       const songAuthor = values.songAuthor;
 
-      const songImageFileOriginalName = selectedImageFile.name.split(".");
+      const songImageFileOriginalName = values.songFile.name.split(".");
       const songImageFileName = songImageFileOriginalName
       .slice(0, -1)
       .join("-")
@@ -147,8 +156,8 @@ const UploadSongModal = () => {
       const {data: songData, error: songError} = await supabase
       .storage
       .from("songs")
-      .upload(`user-${userDetails?.id}/song-${songName.replace(" ", "-")}-${songId}`, selectedAudioFile, {
-        contentType: selectedAudioFile.type,
+      .upload(`user-${userDetails?.id}/song-${songName.replace(" ", "-")}-${songId}`, values.songFile, {
+        contentType: values.songFile.type,
         cacheControl: "3600"
       });
 
@@ -160,8 +169,8 @@ const UploadSongModal = () => {
       const {data: imageData, error: imageError} = await supabase
       .storage
       .from("images")
-      .upload(`user-${userDetails?.id}/image-${songImageFileName}-${songId}`, selectedImageFile, {
-        contentType: selectedImageFile.type,
+      .upload(`user-${userDetails?.id}/image-${songImageFileName}-${songId}`, values.image, {
+        contentType: values.image.type,
         cacheControl: "3600"
       });
 
@@ -201,14 +210,19 @@ const UploadSongModal = () => {
       isOpen={isOpen}
       onOpenChange={(open: boolean) => {
         if (isUploading) return null;
-        onOpenChange(open)
+
+        if (!open) {
+          onCloseModalHandler();
+        }
+
+        onOpenChange(open);
       }}
     >
-      <FormProvider {...methods}>
+      <FormProvider {...formProps}>
         <form
           className="flex flex-col justify-between gap-5 w-full p-5"
           noValidate
-          onSubmit={methods.handleSubmit(onSubmitHandler)}
+          onSubmit={formProps.handleSubmit(onSubmitHandler)}
         >
           <FormInput
             id="songAuthor"
@@ -227,48 +241,60 @@ const UploadSongModal = () => {
             disabled={isUploading}
           />
 
-          <div className="flex flex-col gap-2">
+          <div className="flex flex-col gap-3">
             <p className="text-sm text-white">
               Select audio file (.mp3 or .wav)
             </p>
 
             <label
               className={twMerge("flex items-center w-full h-[45px] px-3 bg-neutral-700 rounded-md cursor-pointer")}
-              htmlFor="songFile"
+              htmlFor="audioFile"
             >
               <span className="text-sm text-white truncate">
-                {!selectedAudioFile ? "Choose file" : "Change file - "}
+                {!selectedAudioFile && "Choose file"}
                 {selectedAudioFile && selectedAudioFile.name}
               </span>
             </label>
 
-            <input
-              ref={audioFileInputRef}
-              id="songFile"
-              type="file"
-              hidden
-              accept="audio/mpeg, audio/wav"
-              disabled={isUploading}
-              onChange={onAudioFileChangeHandler}
+            <Controller
+              control={formProps.control}
+              name="image"
+              render={() => {
+                return (
+                  <input
+                    ref={imageFileInputRef}
+                    id="audioFile"
+                    hidden
+                    type="file"
+                    accept={ACCEPTED_AUDIO_TYPES.join(", ")}
+                    multiple={false}
+                    disabled={processingImage || isUploading}
+                    onChange={(e) => {
+                      if (e.target.files) {
+                        onAudioFileChangeHandler(e.target.files[0])
+                      }
+                    }}
+                  />
+                )
+              }}
             />
 
-            {/* Mensaje de error de audio requerido */}
             <AnimatePresence>
-              {audioRequiredError &&
+              {formProps.formState.errors.songFile &&
                 <motion.p
                   key="audioValidationErrorMessage"
-                  className="text-sm font-bold text-red-500"
+                  className="text-sm text-left text-red-500 font-bold translate-y-[-5px]"
                   initial={{height: 0, opacity: 0}}
                   animate={{height: "auto", opacity: 1}}
                   exit={{height: 0, opacity: 0}}
                 >
-                  The song is required
+                  {formProps.formState.errors.songFile.message as string}
                 </motion.p>
               }
             </AnimatePresence>
           </div>
 
-          <div className="flex flex-col gap-2">
+          <div className="flex flex-col gap-3">
             <p className="text-sm text-white">
               Select image file (.jpg, .jpeg, .png, .webp)
             </p>
@@ -278,32 +304,44 @@ const UploadSongModal = () => {
               htmlFor="imageFile"
             >
               <span className="text-sm text-white truncate">
-                {!selectedImageFile ? "Choose file" : "Change file - "}
+                {!selectedImageFile && "Choose file"}
                 {selectedImageFile && selectedImageFile.name}
               </span>
             </label>
 
-            <input
-              ref={imageFileInputRef}
-              id="imageFile"
-              type="file"
-              hidden
-              accept="image/jpg, image/jpeg, image/png, image/webp"
-              disabled={isUploading}
-              onChange={onImageFileChangeHandler}
+            <Controller
+              control={formProps.control}
+              name="image"
+              render={() => {
+                return (
+                  <input
+                    ref={imageFileInputRef}
+                    id="imageFile"
+                    hidden
+                    type="file"
+                    accept={ACCEPTED_IMAGE_TYPES.join(", ")}
+                    multiple={false}
+                    disabled={processingImage || isUploading}
+                    onChange={(e) => {
+                      if (e.target.files) {
+                        onImageFileChangeHandler(e.target.files[0]);
+                      }
+                    }}
+                  />
+                )
+              }}
             />
 
-            {/* Mensaje de error de imagen requerida */}
             <AnimatePresence>
-              {imageRequiredError &&
+              {formProps.formState.errors.image &&
                 <motion.p
                   key="imageValidationErrorMessage"
-                  className="text-sm font-bold text-red-500"
+                  className="text-sm text-left text-red-500 font-bold translate-y-[-5px]"
                   initial={{height: 0, opacity: 0}}
                   animate={{height: "auto", opacity: 1}}
                   exit={{height: 0, opacity: 0}}
                 >
-                  The image is required
+                  {formProps.formState.errors.image.message as string}
                 </motion.p>
               }
             </AnimatePresence>
