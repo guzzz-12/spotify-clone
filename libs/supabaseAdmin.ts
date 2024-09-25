@@ -214,14 +214,17 @@ export const manageSubscriptionStatus = async (props: {subscriptionId: string, c
     const {data: customerData, error: customerError} = await supabase
     .from("customers")
     .select("id")
-    .eq("stripe_customer_id", customerId)
-    .single();
+    .eq("stripe_customer_id", customerId);
 
     if (customerError) {
       throw new Error(customerError.message)
     };
 
-    const {id: uuid} = customerData;
+    if (customerData.length === 0) {
+      throw new Error("Customer not found or deleted");
+    }
+
+    const {id: uuid} = customerData[0];
 
     const subscription = await stripe.subscriptions.retrieve(subscriptionId, {
       expand: ["default_payment_method"]
@@ -251,8 +254,7 @@ export const manageSubscriptionStatus = async (props: {subscriptionId: string, c
       const {error: deleteError} = await supabase
       .from("subscriptions")
       .delete()
-      .eq("id", subscriptionId)
-      .single();
+      .eq("id", subscriptionId);
 
       if (deleteError) {
         throw new Error(deleteError.message)
@@ -270,16 +272,17 @@ export const manageSubscriptionStatus = async (props: {subscriptionId: string, c
       .from("subscriptions")
       .select("*")
       .eq("user_id", uuid)
-      .neq("id", subscriptionData.id)
-      .single();
+      .neq("id", subscriptionData.id);
+
+      if (!currentSubscription || currentSubscription.length === 0) {
+        throw new Error("Subscription not found or canceled");
+      }
 
       // Eliminar la suscripción actual si la tiene
       // Al cancelar la suscripción en Stripe, el webhook
       // la elimina automáticamente de la base de datos
       // en el evento CUSTOMER_SUBSCRIPTION_DELETED
-      if (currentSubscription) {
-        await stripe.subscriptions.cancel(currentSubscription.id);
-      };
+      await stripe.subscriptions.cancel(currentSubscription[0].id);
     };
     
     const {error} = await supabase.from("subscriptions").upsert(subscriptionData);
