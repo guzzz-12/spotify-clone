@@ -15,7 +15,6 @@ import SidebarPlaylistBtn from "./SidebarPlaylistBtn";
 import SongLibrary from "./SongLibrary";
 import Button from "./Button";
 import usePlayer from "@/hooks/usePlayer";
-import useCurrentSession from "@/hooks/useCurrentSession";
 import { supabaseBrowserClient } from "@/utils/supabaseBrowserClient";
 import { Song } from "@/types";
 
@@ -34,12 +33,30 @@ const SidebarContent = () => {
 
   const {playList} = usePlayer();
 
+  const [session, setSession] = useState<Session | null>(null);
   const [songs, setSongs] = useState<Song[]>([]);
   const [page, setPage] = useState(1);
   const [loading, setLoading] = useState(true);
   const [totalSongs, setTotalSongs] = useState(0);
 
-  const {session, setSession} = useCurrentSession();
+
+  // Verificar si el usuario está autenticado
+  useEffect(() => {
+    supabase.auth
+    .getSession()
+    .then(res => {
+      setSession(res.data.session);
+    });
+
+    supabase.auth.onAuthStateChange((e) => {
+      if (e === "SIGNED_OUT") {
+        setSession(null);
+        setSongs([]);
+        setSession(null);
+      }
+    });
+  }, []);
+
 
   /**
    * Consultar y paginar las canciones
@@ -52,11 +69,9 @@ const SidebarContent = () => {
         return;
       };
 
-      
       const PAGE_SIZE = 10;
       const user = session.user;
 
-      
       // Calcular la siguiente página de resultados
       const FROM = PAGE_SIZE * (page - 1);
       const TO = FROM + PAGE_SIZE - 1;
@@ -93,14 +108,11 @@ const SidebarContent = () => {
   };
 
 
+  // Consultar la primera página de canciones
+  // si el usuario está autenticado
   useEffect(() => {
     if (session) {
       getSongs(1, session);
-
-    } else {
-      setSongs([]);
-      setSession(null);
-      setLoading(false);
     }
   }, [session]);
   
@@ -111,7 +123,6 @@ const SidebarContent = () => {
     if (session && page > 1 && page !== currentPageRef.current) {
       getSongs(page, session)
     };
-
   }, [session, page, currentPageRef]);
 
 
