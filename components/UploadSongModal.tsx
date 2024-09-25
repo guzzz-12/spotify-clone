@@ -20,11 +20,8 @@ import Button from "./Button";
 import { UserContext } from "@/context/UserProvider";
 import { fileToBase64, imageProcessor } from "@/utils/imageCompression";
 import { supabaseBrowserClient } from "@/utils/supabaseBrowserClient";
+import { ACCEPTED_AUDIO_TYPES, ACCEPTED_IMAGE_TYPES, AUTHOR_NAME_REGEX, SONG_TITLE_REGEX } from "@/utils/validationRegex";
 
-const AUTHOR_NAME_REGEX = /^[A-Za-zÀ-ž0-9'\s]{3,32}$/;
-const SONG_TITLE_REGEX = /^[A-Za-zÀ-ž0-9'_\-\s]{3,32}$/;
-const ACCEPTED_AUDIO_TYPES = ["audio/mpeg", "audio/wav"];
-const ACCEPTED_IMAGE_TYPES = ["image/jpeg", "image/jpg", "image/png", "image/webp"];
 
 const SongFormSchema = z.object({
   songAuthor: z
