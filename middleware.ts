@@ -2,13 +2,15 @@ import { NextResponse, type NextRequest } from "next/server";
 import { updateSession } from "./utils/supabaseMiddleware";
 
 export async function middleware(request: NextRequest) {
+  const path = request.nextUrl.pathname;
+
   // Permitir el acceso al home page a usuarios no autenticados
-  if (request.nextUrl.pathname === "/") {
+  if (path === "/") {
     return NextResponse.next();
   }
 
   // Excluir del middleware los endpoints de autenticación
-  if (request.nextUrl.pathname.includes("/api/auth")) {
+  if (path.includes("/api/auth") || path.includes("webhook")) {
     return NextResponse.next();
   }
 
