@@ -1,10 +1,10 @@
 "use client"
 
 import { useState, useContext } from "react";
+import axios from "axios";
 import { toast } from "react-hot-toast";
 import GenericModal from "./GenericModal";
 import Button from "./Button";
-import Typography from "./Typography";
 import useSubscriptionModal from "@/hooks/useSubscriptionModal";
 import { UserContext } from "@/context/UserProvider";
 import { getStripe } from "@/libs/stripeClient";
@@ -49,18 +49,11 @@ const SubscriptionModal = (props: Props) => {
         metadata: {}
       };
 
-      const res = await fetch("/api/subscription", {
+      const {data: subscriptionData} = await axios<{sessionUrl: string; sessionId: string}>({
         method: "POST",
-        body: JSON.stringify(data),
-        headers: new Headers({"Content-Type": "application/json"}),
-        credentials: "same-origin"
+        url: "/api/subscription",
+        data,
       });
-
-      if (!res.ok) {
-        throw new Error(`Request failed with status ${res.status}`)
-      };
-
-      const resData = await res.json();
 
       const stripe = await getStripe();
 
@@ -68,7 +61,7 @@ const SubscriptionModal = (props: Props) => {
         return toast.error("Error creating subscription. Reload the page and try again")
       };
 
-      stripe.redirectToCheckout({sessionId: resData.data.sessionId});
+      stripe.redirectToCheckout({sessionId: subscriptionData.sessionId});
 
     } catch (error: any) {
       toast.error(`Error creating subscription: ${error.message}`)

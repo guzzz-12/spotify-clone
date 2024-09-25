@@ -1,3 +1,5 @@
+"use server"
+
 import Stripe from "stripe";
 import { Database } from "@/types/supabase";
 import { Price, Product } from "@/types";
@@ -96,27 +98,30 @@ export const getOrCreateCustomer = async (props: {uuid: string, name: string, em
 
     // Chequear si el usuario asociado al UUID existe en la base de datos
     const {data: userData, error: userError} = await supabase
-    .from("users")
-    .select("id")
-    .eq("id", uuid)
-    .single();
+      .from("users")
+      .select("*")
+      .eq("id", uuid);
 
-    if (!userData && !userError) {
+    if (userError) {
+      throw new Error(userError.message);
+    }
+
+    if (!userData) {
       throw new Error(`No existe un usuario asociado al ID ${uuid}`)
     };
 
     // Consultar si existe en la DB un customer asociado al UUID
     const {data: customerData, error: customerError} = await supabase
-    .from("customers")
-    .select("stripe_customer_id")
-    .eq("id", uuid)
-    .single();
+      .from("customers")
+      .select("stripe_customer_id")
+      .eq("id", uuid);
 
-    // Determinar si el usuario posee customer en la base de datos
-    const doesNotExists = customerError && customerError.code === "PGRST116";
+    if (customerError) {
+      throw new Error(customerError.message)
+    };
 
     // Si no existe el customer, crearlo en Stripe y agregarlo a la DB
-    if (doesNotExists) {
+    if (customerData.length === 0) {
       // Crear el customer en Stripe
       const customer = await stripe.customers.create({
         email,
@@ -128,10 +133,9 @@ export const getOrCreateCustomer = async (props: {uuid: string, name: string, em
 
       // Almacenar el customer en la DB
       const {data: newCustomerData, error} = await supabase
-      .from("customers")
-      .insert({id: uuid, stripe_customer_id: customer.id})
-      .select("stripe_customer_id")
-      .single();
+        .from("customers")
+        .insert({id: uuid, stripe_customer_id: customer.id})
+        .select("stripe_customer_id");
 
       if (error) {
         throw new Error(error.message)
@@ -141,27 +145,23 @@ export const getOrCreateCustomer = async (props: {uuid: string, name: string, em
 
       // Agregar el customer de Stripe al usuario en Supabase
       const {error: userUpdateError} = await supabase
-      .from("users")
-      .update({stripe_customer: customer.id})
-      .eq("id", uuid);
+        .from("users")
+        .update({stripe_customer: customer.id})
+        .eq("id", uuid);
 
       // Eliminar el customer de Stripe y de Supabase si hay error
       // al actualizar el usuario en Supabase
       if (userUpdateError) {
-        const customerId = newCustomerData.stripe_customer_id;
+        const customerId = newCustomerData[0].stripe_customer_id;
         await stripe.customers.del(customerId);
         await supabase.from("customers").delete().eq("stripe_customer_id", customerId);
         throw new Error(userUpdateError.message);
       };
   
-      return newCustomerData;
+      return newCustomerData[0];
     };
 
-    if (customerError) {
-      throw new Error(customerError.message)
-    };
-
-    return customerData;
+    return customerData[0];
 
   } catch (error: any) {
     console.log(`Error creando o consultando customer: ${error.message}`);
