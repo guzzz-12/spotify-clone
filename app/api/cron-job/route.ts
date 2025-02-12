@@ -1,10 +1,15 @@
 import { NextRequest, NextResponse } from "next/server";
+import { headers } from "next/headers";
 import getSongs from "@/serverActions/getSongs";
 
+export const dynamic = "force-dynamic";
+
 // Endpoint del cron job para realizar una consulta a la base de datos diariamente a la medianoche y así evitar que el proyecto de supabase se inhabilite por inactividad.
-export async function GET(req: NextRequest) {
+export async function GET(_req: NextRequest) {
   try {
-    if (req.headers.get("Authorization") !== `Bearer ${process.env.CRON_SECRET}`) {
+    const headerList = headers();
+
+    if (headerList.get("Authorization") !== `Bearer ${process.env.CRON_SECRET}`) {
       return NextResponse.json({message: "Unauthorized cron request"}, {status: 401});
     }
 
