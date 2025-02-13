@@ -15,7 +15,11 @@ export async function GET(_req: NextRequest) {
 
     const songs = await getSongs();
 
-    return NextResponse.json({CRON_JOB_SUCCESS: true, TOTAL_SONGS: songs.length});
+    const data = {CRON_JOB_SUCCESS: true, TOTAL_SONGS: songs.length};
+
+    console.log({CRON_JOB_DATA: data});
+
+    return NextResponse.json(data);
   } catch (error: any) {
     console.error({ERROR_DE_CRON_JOB: error.message, error});
   }
