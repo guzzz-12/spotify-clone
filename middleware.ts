@@ -9,6 +9,11 @@ export async function middleware(request: NextRequest) {
     return NextResponse.next();
   }
 
+  // Excluir el endpoint del cron job de vercel
+  if (path === "/api/cron-job") {
+    return NextResponse.next();
+  }
+
   // Excluir del middleware los endpoints de autenticación
   if (path.includes("/api/auth") || path.includes("webhook")) {
     return NextResponse.next();
